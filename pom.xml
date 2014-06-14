@@ -11,6 +11,7 @@
 
     <modules>
         <module>etl</module>
+        <module>backend</module>
     </modules>
 
 
