@@ -1,0 +1,126 @@
+{
+    "destination_addresses" : [
+        "Žerotínova 37-39, 130 00 Praha 3, Česká republika",
+        "Lindnerova 5-7, 180 00 Praha 8, Česká republika",
+        "Kodaňská 16, 101 00 Praha 10, Česká republika"
+    ],
+    "origin_addresses" : [
+        "Nad Petruskou 1-3, 120 00 Praha 2, Česká republika",
+        "Bartoškova 1368/4, 140 00 Praha 4-Nusle, Česká republika",
+        "Pravoúhlá 10-12, 150 00 Praha 5, Česká republika"
+    ],
+    "rows" : [
+        {
+            "elements" : [
+                {
+                    "distance" : {
+                        "text" : "5,1 km",
+                        "value" : 5130
+                    },
+                    "duration" : {
+                        "text" : "11 min",
+                        "value" : 645
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "7,9 km",
+                        "value" : 7923
+                    },
+                    "duration" : {
+                        "text" : "15 min",
+                        "value" : 877
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "2,1 km",
+                        "value" : 2069
+                    },
+                    "duration" : {
+                        "text" : "5 min",
+                        "value" : 298
+                    },
+                    "status" : "OK"
+                }
+            ]
+        },
+        {
+            "elements" : [
+                {
+                    "distance" : {
+                        "text" : "6,0 km",
+                        "value" : 6005
+                    },
+                    "duration" : {
+                        "text" : "11 min",
+                        "value" : 670
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "8,6 km",
+                        "value" : 8576
+                    },
+                    "duration" : {
+                        "text" : "15 min",
+                        "value" : 906
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "2,7 km",
+                        "value" : 2653
+                    },
+                    "duration" : {
+                        "text" : "6 min",
+                        "value" : 331
+                    },
+                    "status" : "OK"
+                }
+            ]
+        },
+        {
+            "elements" : [
+                {
+                    "distance" : {
+                        "text" : "8,5 km",
+                        "value" : 8493
+                    },
+                    "duration" : {
+                        "text" : "15 min",
+                        "value" : 897
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "11,1 km",
+                        "value" : 11063
+                    },
+                    "duration" : {
+                        "text" : "19 min",
+                        "value" : 1134
+                    },
+                    "status" : "OK"
+                },
+                {
+                    "distance" : {
+                        "text" : "6,9 km",
+                        "value" : 6930
+                    },
+                    "duration" : {
+                        "text" : "13 min",
+                        "value" : 773
+                    },
+                    "status" : "OK"
+                }
+            ]
+        }
+    ],
+    "status" : "OK"
+}

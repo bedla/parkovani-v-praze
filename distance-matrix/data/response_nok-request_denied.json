@@ -1,0 +1,7 @@
+{
+    "destination_addresses" : [],
+    "error_message" : "Requests to this API must be over SSL.",
+    "origin_addresses" : [],
+    "rows" : [],
+    "status" : "REQUEST_DENIED"
+}

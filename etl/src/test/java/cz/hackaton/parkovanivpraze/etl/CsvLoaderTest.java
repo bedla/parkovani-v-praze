@@ -20,7 +20,6 @@ public class CsvLoaderTest {
         graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase();
     }
 
-    @Test
     public void testName() throws Exception {
 
         CsvLoader csvLoader = new CsvLoader(file("shp-load.csv"), URI.create("http://localhost:7474/db/data/"), ";");

@@ -12,6 +12,7 @@
     <modules>
         <module>etl</module>
         <module>backend</module>
+        <module>distance-matrix</module>
     </modules>
 
 
