@@ -1,12 +1,11 @@
 package cz.hackaton.parkovanivpraze.etl;
 
+import cz.hackaton.parkovanivpraze.Utils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 public class CsvLoaderTest {
 
@@ -14,7 +13,8 @@ public class CsvLoaderTest {
 
     @Before
     public void prepareTestDatabase() {
-        csvLoader = new CsvLoader(file("shp-load.csv"), URI.create("http://localhost:7474/db/data/"), ",", "Automat");
+        csvLoader = new CsvLoader(Utils.file("shp-load.csv", CsvLoaderTest.class.getClassLoader()),
+                URI.create("http://localhost:7474/db/data/"), ",", "Automat");
         csvLoader.clearDb();
     }
 
@@ -30,11 +30,4 @@ public class CsvLoaderTest {
         csvLoader.clearDb();
     }
 
-    private static File file(String fileName) {
-        try {
-            return new File(CsvLoaderTest.class.getClassLoader().getResource(fileName).toURI());
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
-    }
 }
