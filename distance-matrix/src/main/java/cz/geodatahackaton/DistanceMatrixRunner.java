@@ -11,24 +11,25 @@ import cz.geodatahackaton.util.DistanceMatrixUrlUtils;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 /**
+ * Runner for the matrix request(s).
+ *
  * @author cubeek
  */
 public class DistanceMatrixRunner {
 
     private static final Properties props = new Properties();
 
-    private final boolean execute;
-
     public static void main(String[] args) throws Exception {
         props.load(DistanceMatrixRunner.class.getResourceAsStream(DistanceMatrixConstants.CONFIG_FILE));
         new DistanceMatrixRunner(
                 new CoordsStrategyRectangular(
                         (new CoordsDaoMock()).getData(),
-                        Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT))
-                ));
+                        Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT)))
+                );
     }
 
     /**
@@ -37,10 +38,9 @@ public class DistanceMatrixRunner {
      * @param strategy filtering strategy
      */
     public DistanceMatrixRunner(final CoordsStrategy strategy) {
-        execute = Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE));
-
-        if (execute) {
-            for (Coords c : strategy.getCoordsList()) {
+        List<Coords> coordsList = strategy.getCoordsList();
+        if (Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE))) {
+             for (Coords c :coordsList) {
                 downloadDistanceMatrix(c);
             }
         }
@@ -91,7 +91,7 @@ public class DistanceMatrixRunner {
     }
 
     private String generateHeader(final Coords coords, String url) {
-        return "Request\n=======\n" + coords.toString() + "URL:\n" + url + "\n\n" + "Response\n========\n";
+        return "== Request ==\n" + coords.toString() + "URL:\n" + url + "\n\n" + "== Response ==\n";
     }
 
 }

@@ -52,7 +52,11 @@ public class CoordsStrategyRectangularCounter {
         int aN = BigDecimal.valueOf(Math.sqrt(n)).intValue();
         int aN1 = aN + 1;
         int baseA = (Math.abs(n - (aN ^ 2)) < Math.abs(n - (aN1 ^ 2))) ? aN : aN1;
-        return baseA <= maxReqA ? baseA : maxReqA;
+        if (baseA > maxReqA) {
+            System.err.println("This many requests can't yet be processed!");
+            return -1;
+        }
+        return baseA;
     }
 
     /* ******
