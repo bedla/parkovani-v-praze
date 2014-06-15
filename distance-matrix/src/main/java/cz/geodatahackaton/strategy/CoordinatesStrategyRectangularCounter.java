@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  *
  * @author cubeek
  */
-public class CoordsStrategyRectangularCounter {
+public class CoordinatesStrategyRectangularCounter {
 
     private final int size;
 
@@ -19,7 +19,7 @@ public class CoordsStrategyRectangularCounter {
 
     private int total;
 
-    public CoordsStrategyRectangularCounter(final int size, final int maxRequestSize) {
+    public CoordinatesStrategyRectangularCounter(final int size, final int maxRequestSize) {
         this.size = size;
         this.maxRequestSize = maxRequestSize;
 
@@ -59,35 +59,16 @@ public class CoordsStrategyRectangularCounter {
         return baseA;
     }
 
-    /* ******
-     * TODO Get rid of this BS (or at least make it work properly)
-     ****** */
-
-    public int getTotalSingleDirection() {
+    public int getTotalCoordinates() {
         return total;
     }
 
-    public int getTotal() {
-        return total * 4;
-    }
-
-    public int getNumberOfRequestsSingleDirection() {
-        return numberOfRequests;
-    }
-
     public int getNumberOfRequests() {
-        return numberOfRequests * 4;
-    }
-
-    public int getMinTime() {
-        return numberOfRequests * 40;
+        return numberOfRequests;
     }
 
     public int getSideSize() {
         return sideSize;
     }
 
-    public int getSize() {
-        return size;
-    }
 }

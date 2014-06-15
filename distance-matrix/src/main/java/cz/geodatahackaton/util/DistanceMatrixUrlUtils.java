@@ -1,8 +1,8 @@
 package cz.geodatahackaton.util;
 
 import com.google.common.base.Preconditions;
-import cz.geodatahackaton.entity.Coordination;
-import cz.geodatahackaton.entity.Coords;
+import cz.geodatahackaton.entity.Coordinate;
+import cz.geodatahackaton.entity.Coordinates;
 
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +20,7 @@ public class DistanceMatrixUrlUtils {
      * @param key current key
      * @return URL
      */
-    public static String getMatrixUrl(final String urlPattern, final Coords data, final String key) {
+    public static String getMatrixUrl(final String urlPattern, final Coordinates data, final String key) {
         Preconditions.checkNotNull(urlPattern);
         Preconditions.checkNotNull(data);
         return getMatrixUrl(
@@ -51,9 +51,9 @@ public class DistanceMatrixUrlUtils {
      * @param params a list of coordination values
      * @return params in <tt>41.43206,-81.38992|41.43206,-81.38992|...</tt> format
      */
-    private static String getUrlParams(final List<Coordination> params) {
+    private static String getUrlParams(final List<Coordinate> params) {
         final StringBuilder sb = new StringBuilder();
-        final Iterator<Coordination> it = params.iterator();
+        final Iterator<Coordinate> it = params.iterator();
         while (it.hasNext()) {
             sb.append(it.next().getValue());
             if (it.hasNext())

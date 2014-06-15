@@ -1,9 +1,9 @@
 package cz.geodatahackaton;
 
-import cz.geodatahackaton.dao.CoordsDaoMock;
-import cz.geodatahackaton.entity.Coords;
-import cz.geodatahackaton.strategy.CoordsStrategy;
-import cz.geodatahackaton.strategy.CoordsStrategyRectangular;
+import cz.geodatahackaton.dao.CoordinatesDaoMock;
+import cz.geodatahackaton.entity.Coordinates;
+import cz.geodatahackaton.strategy.CoordinatesStrategy;
+import cz.geodatahackaton.strategy.CoordinatesStrategyRectangular;
 import cz.geodatahackaton.util.DistanceMatrixConfigKeys;
 import cz.geodatahackaton.util.DistanceMatrixConstants;
 import cz.geodatahackaton.util.DistanceMatrixUrlUtils;
@@ -26,8 +26,8 @@ public class DistanceMatrixRunner {
     public static void main(String[] args) throws Exception {
         props.load(DistanceMatrixRunner.class.getResourceAsStream(DistanceMatrixConstants.CONFIG_FILE));
         new DistanceMatrixRunner(
-                new CoordsStrategyRectangular(
-                        (new CoordsDaoMock()).getData(),
+                new CoordinatesStrategyRectangular(
+                        (new CoordinatesDaoMock()).getData(),
                         Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT)))
                 );
     }
@@ -37,25 +37,25 @@ public class DistanceMatrixRunner {
      *
      * @param strategy filtering strategy
      */
-    public DistanceMatrixRunner(final CoordsStrategy strategy) {
-        List<Coords> coordsList = strategy.getCoordsList();
+    public DistanceMatrixRunner(final CoordinatesStrategy strategy) {
+        List<Coordinates> coordinates = strategy.getCoordsList();
         if (Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE))) {
-             for (Coords c :coordsList) {
+             for (Coordinates c : coordinates) {
                 downloadDistanceMatrix(c);
             }
         }
     }
 
     /**
-     * Download the distance matrix for the specific {@link cz.geodatahackaton.entity.Coords}
+     * Download the distance matrix for the specific {@link cz.geodatahackaton.entity.Coordinates}
      *
-     * @param coords coords
+     * @param coordinates coordinates
      */
-    private void downloadDistanceMatrix(Coords coords) {
+    private void downloadDistanceMatrix(Coordinates coordinates) {
         try {
-            final URL url = new URL(DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), coords, null));
+            final URL url = new URL(DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), coordinates, null));
             final BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            final StringBuilder result = new StringBuilder(generateHeader(coords, url.toString()));
+            final StringBuilder result = new StringBuilder(generateHeader(coordinates, url.toString()));
 
             String buff;
             while (null != (buff = reader.readLine())) {
@@ -90,8 +90,8 @@ public class DistanceMatrixRunner {
         System.out.println(buff.toString());
     }
 
-    private String generateHeader(final Coords coords, String url) {
-        return "== Request ==\n" + coords.toString() + "URL:\n" + url + "\n\n" + "== Response ==\n";
+    private String generateHeader(final Coordinates coordinates, String url) {
+        return "== Request ==\n" + coordinates.toString() + "URL:\n" + url + "\n\n" + "== Response ==\n";
     }
 
 }

@@ -28,13 +28,13 @@ public class DistanceMatrixUrlUtilsTest {
 
     @Test
     public void testGetMatrixUrl_test_call_url() throws Exception {
-        final String url = DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), DistanceMatrixTestData.COORDS, null);
+        final String url = DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), DistanceMatrixTestData.COORDINATES, null);
         assertEquals("The URL should match the default test URL.", DistanceMatrixTestData.URL_EXPECTED_TEST, url);
     }
 
     @Test
     public void testGetMatrixUrl_real_url() throws Exception {
-        final String url = DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), DistanceMatrixTestData.COORDS, DistanceMatrixTestData.TEST_KEY);
+        final String url = DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), DistanceMatrixTestData.COORDINATES, DistanceMatrixTestData.TEST_KEY);
         assertEquals("The URL should match the default test URL.", DistanceMatrixTestData.URL_EXPECTED_REAL, url);
     }
 

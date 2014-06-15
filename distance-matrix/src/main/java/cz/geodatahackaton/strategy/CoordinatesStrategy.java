@@ -1,8 +1,8 @@
 package cz.geodatahackaton.strategy;
 
 import com.google.common.base.Preconditions;
-import cz.geodatahackaton.entity.Coordination;
-import cz.geodatahackaton.entity.Coords;
+import cz.geodatahackaton.entity.Coordinate;
+import cz.geodatahackaton.entity.Coordinates;
 
 import java.util.List;
 
@@ -11,21 +11,21 @@ import java.util.List;
  *
  * @author cubeek
  */
-public abstract class CoordsStrategy {
+public abstract class CoordinatesStrategy {
 
     /** Data instance */
-    protected final List<Coordination> data;
+    protected final List<Coordinate> data;
 
     /**
      * Instantiate the strategy
      *
      * @param data initial data
      */
-    public CoordsStrategy(final List<Coordination> data) {
+    public CoordinatesStrategy(final List<Coordinate> data) {
         Preconditions.checkNotNull(data);
         this.data = data;
     }
 
-    public abstract List<Coords> getCoordsList();
+    public abstract List<Coordinates> getCoordsList();
 
 }

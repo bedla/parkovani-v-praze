@@ -5,13 +5,13 @@ import com.google.common.base.Preconditions;
 /**
  * @author cubeek
  */
-public class Coordination {
+public class Coordinate {
 
     private String id;
 
     private String value;
 
-    public Coordination(String id, String value) {
+    public Coordinate(String id, String value) {
         Preconditions.checkNotNull(value);
 
         this.id = id;

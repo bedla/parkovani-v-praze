@@ -7,19 +7,19 @@ import java.util.List;
 /**
  * @author cubeek
  */
-public class Coords {
+public class Coordinates {
 
-    final List<Coordination> origins;
+    final List<Coordinate> origins;
 
-    final List<Coordination> destinations;
+    final List<Coordinate> destinations;
 
     /**
-     * Create new Coords instance.
+     * Create new Coordinates instance.
      *
      * @param origins origins
      * @param destinations origins
      */
-    public Coords(final List<Coordination> origins, final List<Coordination> destinations) {
+    public Coordinates(final List<Coordinate> origins, final List<Coordinate> destinations) {
         Preconditions.checkNotNull(origins);
         Preconditions.checkNotNull(destinations);
 
@@ -27,11 +27,11 @@ public class Coords {
         this.destinations = destinations;
     }
 
-    public List<Coordination> getOrigins() {
+    public List<Coordinate> getOrigins() {
         return origins;
     }
 
-    public List<Coordination> getDestinations() {
+    public List<Coordinate> getDestinations() {
         return destinations;
     }
 
@@ -39,11 +39,11 @@ public class Coords {
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("Origin:\n");
-        for (Coordination o : origins) {
+        for (Coordinate o : origins) {
             sb.append(o.toString()).append("\n");
         }
         sb.append("Destination:\n");
-        for (Coordination d : destinations) {
+        for (Coordinate d : destinations) {
             sb.append(d.toString()).append("\n");
         }
         return sb.toString();
