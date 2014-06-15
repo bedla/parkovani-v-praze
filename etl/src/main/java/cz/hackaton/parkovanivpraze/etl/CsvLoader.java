@@ -1,22 +1,21 @@
 package cz.hackaton.parkovanivpraze.etl;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.CharStreams;
 import com.google.common.primitives.Doubles;
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
+import cz.hackaton.parkovanivpraze.Utils;
 import cz.hackaton.parkovanivpraze.json.Neo4JResponse;
 
 import javax.ws.rs.core.MediaType;
-import java.io.*;
+import java.io.File;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class CsvLoader {
         Map<Integer, String> map = Maps.newHashMap();
 
         boolean firstLine = true;
-        for (String line : readLines()) {
+        for (String line : Utils.readLines(file)) {
             if (firstLine) {
                 firstLine = false;
 
@@ -126,14 +125,6 @@ public class CsvLoader {
     private void createNodes(List<String> requestLines) {
         Neo4JResponse response = new Gson().fromJson(send(Joiner.on("\n").join(requestLines)), Neo4JResponse.class);
         System.out.println(response);
-    }
-
-    private List<String> readLines() {
-        try {
-            return CharStreams.readLines(new BufferedReader(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8)));
-        } catch (IOException e) {
-            throw new IllegalStateException(e.getMessage(), e);
-        }
     }
 
     private String send(String query) {
