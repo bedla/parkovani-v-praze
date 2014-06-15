@@ -10,6 +10,8 @@ public class DistanceMatrixConfigKeys {
     /** Request limit */
     public static final String REQUEST_LIMIT = "limit.key.request";
 
+    public static final String REQUEST_DELAY = "limit.delay.ms";
+
     /** Data folder */
     public static final String FOLDER_URL = "output.folder.url";
 
