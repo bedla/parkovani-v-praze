@@ -39,13 +39,14 @@ public class DistanceResponse {
 
             public final Value distance = null;
             public final Value duration = null;
-            public final String status = null;
+            public String status = "N/A";
 
             @Override
             public String toString() {
                 return "Element{" +
                         "distance=" + distance +
                         ", duration=" + duration +
+                        ", status='" + status + '\'' +
                         '}';
             }
 

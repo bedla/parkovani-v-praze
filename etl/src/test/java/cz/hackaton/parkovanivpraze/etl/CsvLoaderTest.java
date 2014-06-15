@@ -3,6 +3,7 @@ package cz.hackaton.parkovanivpraze.etl;
 import cz.hackaton.parkovanivpraze.Utils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
@@ -18,6 +19,7 @@ public class CsvLoaderTest {
         csvLoader.clearDb();
     }
 
+    @Ignore
     @Test
     public void testName() throws Exception {
         csvLoader.load();

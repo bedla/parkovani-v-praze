@@ -40,7 +40,7 @@ public class CsvLoader {
     }
 
     public void clearDb() {
-        send("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r");
+        Utils.send(neo4jServerUri, "MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r");
     }
 
     public void load() {
@@ -118,34 +118,12 @@ public class CsvLoader {
     }
 
     public int countNodes() {
-        System.out.println(send("MATCH (a:" + Joiner.on(":").join(types) + ") RETURN count(a)"));
+        System.out.println(Utils.send(neo4jServerUri, "MATCH (a:" + Joiner.on(":").join(types) + ") RETURN count(a)"));
         return 0;
     }
 
     private void createNodes(List<String> requestLines) {
-        Neo4JResponse response = new Gson().fromJson(send(Joiner.on("\n").join(requestLines)), Neo4JResponse.class);
+        Neo4JResponse response = new Gson().fromJson(Utils.send(neo4jServerUri, Joiner.on("\n").join(requestLines)), Neo4JResponse.class);
         System.out.println(response);
-    }
-
-    private String send(String query) {
-
-
-        Client client = Client.create();
-        client.addFilter(new LoggingFilter(System.out));
-        WebResource resource = client.resource(neo4jServerUri + "transaction/commit");
-
-        ClientResponse response = resource
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .entity("{\"statements\":[{\"statement\":" + new Gson().toJson(query) + ",\"resultDataContents\":[\"row\",\"graph\"],\"includeStats\":true}]}")
-                .post(ClientResponse.class);
-
-        String responseStr = response.getEntity(String.class);
-
-        System.out.println(String.format("POST status code [%d], returned data: %s\n%s", response.getStatus(), response, responseStr));
-
-        response.close();
-
-        return responseStr;
     }
 }

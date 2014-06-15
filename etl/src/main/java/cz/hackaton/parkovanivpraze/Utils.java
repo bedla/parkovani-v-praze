@@ -4,8 +4,15 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.io.CharStreams;
+import com.google.gson.Gson;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 
+import javax.ws.rs.core.MediaType;
 import java.io.*;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -42,4 +49,23 @@ public class Utils {
         }
     }
 
+    public static String send(URI neo4jServerUri, String query) {
+        Client client = Client.create();
+        client.addFilter(new LoggingFilter(System.out));
+        WebResource resource = client.resource(neo4jServerUri + "transaction/commit");
+
+        ClientResponse response = resource
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
+                .entity("{\"statements\":[{\"statement\":" + new Gson().toJson(query) + ",\"resultDataContents\":[\"row\",\"graph\"],\"includeStats\":true}]}")
+                .post(ClientResponse.class);
+
+        String responseStr = response.getEntity(String.class);
+
+        System.out.println(String.format("POST status code [%d], returned data: %s\n%s", response.getStatus(), response, responseStr));
+
+        response.close();
+
+        return responseStr;
+    }
 }

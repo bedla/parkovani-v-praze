@@ -2,6 +2,7 @@ package cz.hackaton.parkovanivpraze.etl;
 
 import cz.hackaton.parkovanivpraze.Utils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.net.URI;
@@ -16,10 +17,11 @@ public class DistanceMatrixLoaderTest {
     public void setUp() throws Exception {
         loader = new DistanceMatrixLoader(Utils.file("response-dump.log",
                 DistanceMatrixLoaderTest.class.getClassLoader()),
-                URI.create("http://localhost:7474/db/data/"));
+                URI.create("http://localhost:7474/db/data/"), "Automat");
 
     }
 
+    @Ignore
     @Test
     public void testName() throws Exception {
         loader.load();
