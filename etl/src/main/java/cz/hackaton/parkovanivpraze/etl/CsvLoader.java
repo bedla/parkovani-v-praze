@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import cz.hackaton.parkovanivpraze.json.Neo4JResponse;
 
 import javax.ws.rs.core.MediaType;
@@ -39,9 +40,9 @@ public class CsvLoader {
         Preconditions.checkArgument(types.length > 0);
     }
 
-//    public void clearDb() {
-//        send("MATCH a DELETE a");
-//    }
+    public void clearDb() {
+        send("MATCH (n) OPTIONAL MATCH (n)-[r]-() DELETE n,r");
+    }
 
     public void load() {
 
@@ -102,6 +103,11 @@ public class CsvLoader {
         createNodes(requestLines);
     }
 
+    public int countNodes() {
+        System.out.println(send("MATCH (a:" + Joiner.on(":").join(types) + ") RETURN count(a)"));
+        return 0;
+    }
+
     private void createNodes(List<String> requestLines) {
         Neo4JResponse response = new Gson().fromJson(send(Joiner.on("\n").join(requestLines)), Neo4JResponse.class);
         System.out.println(response);
@@ -117,12 +123,15 @@ public class CsvLoader {
 
     private String send(String query) {
 
-        WebResource resource = Client.create().resource(neo4jServerUri + "transaction/commit");
+
+        Client client = Client.create();
+        client.addFilter(new LoggingFilter(System.out));
+        WebResource resource = client.resource(neo4jServerUri + "transaction/commit");
 
         ClientResponse response = resource
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
-                .entity("{\"statements\":[{\"statement\":\"" + query + "\",\"resultDataContents\":[\"row\",\"graph\"],\"includeStats\":true}]}")
+                .entity("{\"statements\":[{\"statement\":" + new Gson().toJson(query) + ",\"resultDataContents\":[\"row\",\"graph\"],\"includeStats\":true}]}")
                 .post(ClientResponse.class);
 
         String responseStr = response.getEntity(String.class);

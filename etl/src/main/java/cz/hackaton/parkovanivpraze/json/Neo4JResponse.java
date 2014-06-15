@@ -67,6 +67,8 @@ public class Neo4JResponse {
             public final int relationship_deletedrelationship = 0;
             public final int relationships_createdrelationships = 0;
 
+//            "contains_updates":true,"nodes_created":3,"nodes_deleted":0,"properties_set":9,"relationships_created":0,"relationship_deleted":0,"labels_added":3,"labels_removed":0,"indexes_added":0,"indexes_removed":0,"constraints_added":0,"constraints_removed":0
+
             @Override
             public String toString() {
                 return "Stats{" +
