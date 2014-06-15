@@ -1,8 +1,10 @@
 package cz.geodatahackaton.strategy;
 
+import com.google.common.collect.ImmutableList;
 import cz.geodatahackaton.entity.Coordination;
 import cz.geodatahackaton.entity.Coords;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
 
     private final CoordsStrategyRectangularCounter counter;
 
-    private final Coords[][] coords;
+    private final Coordination[][] coords;
     private final int requestLimit;
 
     /**
@@ -26,20 +28,51 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
         this.requestLimit = requestLimit;
 
         counter = new CoordsStrategyRectangularCounter(data.size(), requestLimit);
-        int sideSize = counter.getSideSize();
-        if ((sideSize ^ 2) > requestLimit) {
-
-        }
-        coords = new Coords[counter.getSideSize()][counter.getSideSize()];
+        coords = new Coordination[counter.getSideSize()][counter.getSideSize()];
     }
 
     @Override
     public List<Coords> getCoordsList() {
-        for (int i = 0; i < counter.getSideSize(); i++) {
+        int i = 0;
+        int j = 0;
 
+        for (Coordination coordination : data) {
+            if (j == counter.getSideSize()) {
+                i++;
+                j = 0;
+            }
+            coords[i][j] = coordination;
+            j++;
         }
 
         return null;
+
+//        int i = 0;
+//        final List<Coords> results = new LinkedList<>();
+//        List<Coordination> origins = new LinkedList<>();
+//        List<Coordination> destinations = new LinkedList<>();
+//
+//        for (Coordination coordination : data) {
+//            if (i < requestLimit) {
+//                if (i < counter.getSideSize()) {
+//                    origins.add(coordination);
+//                } else {
+//                    destinations.add(coordination);
+//                }
+//            } else {
+//                results.add(new Coords(ImmutableList.copyOf(origins), ImmutableList.copyOf(destinations)));
+//                origins.clear();
+//                destinations.clear();
+//            }
+//
+//            if (origins.size() > 0 && destinations.size() > 0) {
+//                results.add(new Coords(ImmutableList.copyOf(origins), ImmutableList.copyOf(destinations)));
+//            }
+//
+//            // increment counter
+//            i += 1;
+//        }
+//        return results;
     }
 
 

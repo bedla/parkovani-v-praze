@@ -7,7 +7,7 @@ import cz.geodatahackaton.strategy.CoordsStrategyRectangularCounter;
  */
 public class DistanceMatrixMeter {
 
-    public static final int DATA_SIZE = 500;
+    public static final int DATA_SIZE = 22;
 
     public static final int DATA_LIMIT = 100;
 

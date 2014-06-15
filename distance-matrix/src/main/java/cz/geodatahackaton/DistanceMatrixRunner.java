@@ -11,9 +11,12 @@ import cz.geodatahackaton.util.DistanceMatrixUrlUtils;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 /**
+ * Runner for the matrix request(s).
+ *
  * @author cubeek
  */
 public class DistanceMatrixRunner {
@@ -27,8 +30,8 @@ public class DistanceMatrixRunner {
         new DistanceMatrixRunner(
                 new CoordsStrategyRectangular(
                         (new CoordsDaoMock()).getData(),
-                        Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT))
-                ));
+                        Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT)))
+                );
     }
 
     /**
@@ -38,9 +41,9 @@ public class DistanceMatrixRunner {
      */
     public DistanceMatrixRunner(final CoordsStrategy strategy) {
         execute = Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE));
-
+        List<Coords> coordsList = strategy.getCoordsList();
         if (execute) {
-            for (Coords c : strategy.getCoordsList()) {
+             for (Coords c :coordsList) {
                 downloadDistanceMatrix(c);
             }
         }
