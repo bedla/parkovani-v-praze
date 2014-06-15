@@ -1,19 +1,19 @@
 package cz.geodatahackaton.dao;
 
-import cz.geodatahackaton.entity.Coordination;
+import cz.geodatahackaton.entity.Coordinate;
 
 import java.util.List;
 
 /**
  * @author cubeek
  */
-public interface CoordsDao {
+public interface CoordinatesDao {
 
     /**
      * Return coords data
      *
      * @return coords data
      */
-    List<Coordination> getData();
+    List<Coordinate> getData();
 
 }

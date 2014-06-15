@@ -1,6 +1,6 @@
 package cz.geodatahackaton.dao;
 
-import cz.geodatahackaton.entity.Coordination;
+import cz.geodatahackaton.entity.Coordinate;
 import cz.geodatahackaton.util.DistanceMatrixTestData;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
  *
  * @author cubeek
  */
-public class CoordsDaoMock implements CoordsDao {
+public class CoordinatesDaoMock implements CoordinatesDao {
 
-    public List<Coordination> getData() {
+    public List<Coordinate> getData() {
         return DistanceMatrixTestData.DATA;
     }
 

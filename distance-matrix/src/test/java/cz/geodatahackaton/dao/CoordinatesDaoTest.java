@@ -1,27 +1,23 @@
 package cz.geodatahackaton.dao;
 
-import cz.geodatahackaton.entity.Coordination;
 import cz.geodatahackaton.util.DistanceMatrixTestData;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 /**
- * Dummy test for coords DAO
+ * Dummy test for coordinates DAO
  *
  * @author cubeek
  */
-public class CoordsDaoTest {
+public class CoordinatesDaoTest {
 
-    private CoordsDao dao;
+    private CoordinatesDao dao;
 
     @Before
     public void setUp() throws Exception {
-        this.dao = new CoordsDaoMock();
+        this.dao = new CoordinatesDaoMock();
     }
 
     @Test

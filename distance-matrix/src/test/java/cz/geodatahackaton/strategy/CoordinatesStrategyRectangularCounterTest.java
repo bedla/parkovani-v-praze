@@ -12,16 +12,16 @@ import static org.junit.Assert.*;
  *
  * @author cubeek
  */
-public class CoordsStrategyRectangularCounterTest {
+public class CoordinatesStrategyRectangularCounterTest {
 
     private Properties props = new Properties();
 
-    private CoordsStrategyRectangularCounter counter;
+    private CoordinatesStrategyRectangularCounter counter;
 
     @Before
     public void setUp() throws Exception {
-        props.load(CoordsStrategyRectangularCounterTest.class.getResourceAsStream("config-util.properties"));
-        counter = new CoordsStrategyRectangularCounter(
+        props.load(CoordinatesStrategyRectangularCounterTest.class.getResourceAsStream("config-util.properties"));
+        counter = new CoordinatesStrategyRectangularCounter(
                 Integer.parseInt(props.getProperty("request.size")),
                 Integer.parseInt(props.getProperty("max.request.size"))
         );
@@ -37,13 +37,13 @@ public class CoordsStrategyRectangularCounterTest {
     public void testGetNumberOfRequestsSingleDirection() throws Exception {
         assertEquals("Number of requests should equal the expected value!",
                 Integer.parseInt(props.getProperty("expectations.requests")),
-                counter.getNumberOfRequestsSingleDirection());
+                counter.getNumberOfRequests());
     }
 
     @Test
     public void testGetTotalSingleDirection() throws Exception {
         assertEquals("Total number of elements processed in a single direction should equal expected!",
-                Integer.parseInt(props.getProperty("expectations.total")), counter.getTotalSingleDirection());
+                Integer.parseInt(props.getProperty("expectations.total")), counter.getTotalCoordinates());
     }
 
 }
