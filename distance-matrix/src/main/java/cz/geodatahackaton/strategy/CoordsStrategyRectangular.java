@@ -14,7 +14,7 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
 
     private final CoordsStrategyRectangularCounter counter;
 
-    private final Coordination[][] coords;
+
 
     /**
      * Instantiate the strategy
@@ -25,7 +25,6 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
         super(data);
 
         counter = new CoordsStrategyRectangularCounter(data.size(), requestLimit);
-        coords = new Coordination[counter.getSideSize()][counter.getSideSize()];
     }
 
     @Override
@@ -33,30 +32,40 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
         int i = 0;
         int j = 0;
 
+        int sideSize = counter.getSideSize();
+
+        final Coordination[][] coords = new Coordination[sideSize][sideSize];
+
         for (Coordination coordination : data) {
-            if (j == counter.getSideSize()) {
-                i++;
-                j = 0;
+            if (i == sideSize) {
+                j++;
+                i = 0;
             }
             coords[i][j] = coordination;
-            j++;
+            i++;
         }
 
+        final List<Coords> results = getCoords(sideSize, coords);
+
+        return results;
+    }
+
+    private List<Coords> getCoords(int sideSize, Coordination[][] coords) {
         final List<Coords> results = new LinkedList<>();
         final List<Coordination> origins = new LinkedList<>();
         final List<Coordination> destinations = new LinkedList<>();
 
-        for (int pos = 0; pos < counter.getSideSize(); pos++) {
-            for (int w = pos; w < counter.getSideSize(); w++) {
-                for (int h = 0; h < counter.getSideSize(); h++) {
-                    final Coordination coord = coords[h][w];
+        for (int pos = 0; pos < sideSize; pos++) {
+            for (int w = pos; w < sideSize; w++) {
+                for (int h = 0; h < sideSize; h++) {
+                    final Coordination c = coords[h][w];
 
-                    if (coord == null) continue;
+                    if (c == null) continue;
 
                     if (w == pos) {
-                        origins.add(coord);
+                        origins.add(c);
                     } else {
-                        destinations.add(coord);
+                        destinations.add(c);
                     }
                 }
                 if (w > pos) {
@@ -66,7 +75,6 @@ public class CoordsStrategyRectangular extends CoordsStrategy {
             }
             origins.clear();
         }
-
         return results;
     }
 }
