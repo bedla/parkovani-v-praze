@@ -1,5 +1,6 @@
 package cz.geodatahackaton.strategy;
 
+import com.google.common.collect.Lists;
 import cz.geodatahackaton.entity.Coordinate;
 import cz.geodatahackaton.entity.Coordinates;
 
@@ -27,28 +28,71 @@ public class CoordinatesStrategyRectangular extends CoordinatesStrategy {
 
     @Override
     public List<Coordinates> getCoordsList() {
-        int i = 0;
-        int j = 0;
+        final Coordinate[][] coords1 = prepareCoordidatesVertical();
+        final Coordinate[][] coords2 = prepareCoordidatesVerticalReverse();
+        final Coordinate[][] coords3 = prepareCoordinatesHorizontal();
+        final Coordinate[][] coords4 = prepareCoordinatesHorizontalReverse();
 
-        int sideSize = counter.getSideSize();
-
-        final Coordinate[][] coords = new Coordinate[sideSize][sideSize];
-
-        for (Coordinate coordinate : data) {
-            if (i == sideSize) {
-                j++;
-                i = 0;
-            }
-            coords[i][j] = coordinate;
-            i++;
-        }
-
-        final List<Coordinates> results = getCoords(sideSize, coords);
-
+        final List<Coordinates> results = new LinkedList<>();
+        results.addAll(getCoords(coords1));
+        results.addAll(getCoords(coords2));
+        results.addAll(getCoords(coords3));
+        results.addAll(getCoords(coords4));
         return results;
     }
 
-    private List<Coordinates> getCoords(int sideSize, Coordinate[][] coords) {
+    private Coordinate[][] prepareCoordidatesVertical() {
+        return prepareCoordinates(Direction.VERTICAL, false);
+    }
+
+    private Coordinate[][] prepareCoordidatesVerticalReverse() {
+        return prepareCoordinates(Direction.VERTICAL, true);
+    }
+
+    private Coordinate[][] prepareCoordinatesHorizontal() {
+        return prepareCoordinates(Direction.HORIZONTAL, false);
+    }
+
+    private Coordinate[][] prepareCoordinatesHorizontalReverse() {
+        return prepareCoordinates(Direction.HORIZONTAL, true);
+    }
+
+    private Coordinate[][] prepareCoordinates(Direction dir, boolean reverse) {
+        int sideSize = counter.getSideSize();
+
+        int i = 0;
+        int j = 0;
+
+        final Coordinate[][] coordinates = new Coordinate[sideSize][sideSize];
+        List<Coordinate> feed = reverse ? Lists.reverse(data) : data;
+        switch (dir) {
+            case HORIZONTAL:
+                for (Coordinate coordinate : feed) {
+                    if (j == sideSize) {
+                        i++;
+                        j = 0;
+                    }
+                    coordinates[i][j] = coordinate;
+                    j++;
+                }
+                break;
+            case VERTICAL:
+                for (Coordinate coordinate : feed) {
+                    if (i == sideSize) {
+                        j++;
+                        i = 0;
+                    }
+                    coordinates[i][j] = coordinate;
+                    i++;
+                }
+                break;
+        }
+        return coordinates;
+    }
+
+    private List<Coordinates> getCoords(Coordinate[][] coords) {
+        int sideSize = counter.getSideSize();
+
         final List<Coordinates> results = new LinkedList<>();
         final List<Coordinate> origins = new LinkedList<>();
         final List<Coordinate> destinations = new LinkedList<>();
