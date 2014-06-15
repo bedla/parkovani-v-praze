@@ -2,8 +2,6 @@ package cz.geodatahackaton;
 
 import cz.geodatahackaton.strategy.CoordsStrategyRectangularCounter;
 
-import java.math.BigDecimal;
-
 /**
  * @author cubeek
  */
@@ -21,8 +19,8 @@ public class DistanceMatrixMeter {
         System.out.println(String.format("Value of a=%d", counter.getSideSize()));
 
         System.out.println("=== Per direction ===");
-        System.out.println(String.format("Expected amount of requests: %d", counter.getNumberOfRequestsSignleDirection()));
-        System.out.println(String.format("Expected amount of elements: %d", counter.getTotalSignleDirection()));
+        System.out.println(String.format("Expected amount of requests: %d", counter.getNumberOfRequestsSingleDirection()));
+        System.out.println(String.format("Expected amount of elements: %d", counter.getTotalSingleDirection()));
 
         System.out.println("=== Total ===");
         System.out.println(String.format("Expected amount of requests: %d", counter.getNumberOfRequests()));
