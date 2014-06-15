@@ -29,7 +29,7 @@ public class DistanceMatrixRunner {
                 new CoordinatesStrategyRectangular(
                         (new CoordinatesDaoMock()).getData(),
                         Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT)))
-                );
+        );
     }
 
     /**
@@ -39,9 +39,14 @@ public class DistanceMatrixRunner {
      */
     public DistanceMatrixRunner(final CoordinatesStrategy strategy) {
         List<Coordinates> coordinates = strategy.getCoordsList();
-        if (Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE))) {
-             for (Coordinates c : coordinates) {
-                downloadDistanceMatrix(c);
+
+        for (Coordinates c : coordinates) {
+            downloadDistanceMatrix(c);
+
+            try {
+                Thread.sleep(Long.parseLong(props.getProperty(DistanceMatrixConfigKeys.REQUEST_DELAY)));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -54,6 +59,10 @@ public class DistanceMatrixRunner {
     private void downloadDistanceMatrix(Coordinates coordinates) {
         try {
             final URL url = new URL(DistanceMatrixUrlUtils.getMatrixUrl(props.getProperty(DistanceMatrixConfigKeys.URL_PTR), coordinates, null));
+            if (!Boolean.parseBoolean(props.getProperty(DistanceMatrixConfigKeys.EXECUTE))) {
+                System.out.println(url.toString());
+                return;
+            }
             final BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             final StringBuilder result = new StringBuilder(generateHeader(coordinates, url.toString()));
 
@@ -78,10 +87,11 @@ public class DistanceMatrixRunner {
      */
     private void flush(final StringBuilder buff) throws IOException {
         final File file = new File(
-                        props.getProperty(DistanceMatrixConfigKeys.FOLDER_URL) +
+                props.getProperty(DistanceMatrixConfigKeys.FOLDER_URL) +
                         props.getProperty(DistanceMatrixConfigKeys.OUTPUT_FILE_PREFIX) +
                         System.currentTimeMillis() +
-                        props.getProperty(DistanceMatrixConfigKeys.OUTPUT_FILE_SUFFIX));
+                        props.getProperty(DistanceMatrixConfigKeys.OUTPUT_FILE_SUFFIX)
+        );
 
         final BufferedWriter out = new BufferedWriter(new FileWriter(file));
         out.write(buff.toString());
