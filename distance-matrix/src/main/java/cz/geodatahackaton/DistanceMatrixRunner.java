@@ -1,10 +1,9 @@
 package cz.geodatahackaton;
 
-import cz.geodatahackaton.dao.CoordsDao;
 import cz.geodatahackaton.dao.CoordsDaoMock;
 import cz.geodatahackaton.entity.Coords;
 import cz.geodatahackaton.strategy.CoordsStrategy;
-import cz.geodatahackaton.strategy.CoordsStrategyBasic;
+import cz.geodatahackaton.strategy.CoordsStrategyRectangular;
 import cz.geodatahackaton.util.DistanceMatrixConfigKeys;
 import cz.geodatahackaton.util.DistanceMatrixConstants;
 import cz.geodatahackaton.util.DistanceMatrixUrlUtils;
@@ -25,7 +24,11 @@ public class DistanceMatrixRunner {
 
     public static void main(String[] args) throws Exception {
         props.load(DistanceMatrixRunner.class.getResourceAsStream(DistanceMatrixConstants.CONFIG_FILE));
-        new DistanceMatrixRunner(new CoordsStrategyBasic((new CoordsDaoMock()).getData()));
+        new DistanceMatrixRunner(
+                new CoordsStrategyRectangular(
+                        (new CoordsDaoMock()).getData(),
+                        Integer.parseInt(props.getProperty(DistanceMatrixConfigKeys.REQUEST_LIMIT))
+                ));
     }
 
     /**

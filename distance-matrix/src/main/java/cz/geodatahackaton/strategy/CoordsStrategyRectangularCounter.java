@@ -11,7 +11,7 @@ public class CoordsStrategyRectangularCounter {
 
     private final int size;
 
-    private final int requestDataLimit;
+    private final int maxRequestSize;
 
     private int sideSize;
 
@@ -19,27 +19,24 @@ public class CoordsStrategyRectangularCounter {
 
     private int total;
 
-    public CoordsStrategyRectangularCounter(final int size, final int requestDataLimit) {
+    public CoordsStrategyRectangularCounter(final int size, final int maxRequestSize) {
         this.size = size;
-        this.requestDataLimit = requestDataLimit;
+        this.maxRequestSize = maxRequestSize;
+
         evaluate();
     }
 
     private void evaluate() {
         int a = evalA(size);
-
         int numberOfRequests = 0;
         int total = 0;
         int i = 0;
+
         while (true) {
             int result = (size - (a * i++));
             if (result >= 0) {
                 total += result;
-                int req = result /requestDataLimit ;
-                if (result % requestDataLimit > 0) {
-                    req += 1;
-                }
-                numberOfRequests += req;
+                numberOfRequests += 1;
             } else {
                 break;
             }
@@ -51,12 +48,18 @@ public class CoordsStrategyRectangularCounter {
     }
 
     private int evalA(int n) {
+        int maxReqA = BigDecimal.valueOf(Math.sqrt(maxRequestSize)).intValue();
         int aN = BigDecimal.valueOf(Math.sqrt(n)).intValue();
         int aN1 = aN + 1;
-        return (Math.abs(n - (aN * aN)) < Math.abs(n - (aN1 * aN1))) ? aN : aN1;
+        int baseA = (Math.abs(n - (aN ^ 2)) < Math.abs(n - (aN1 ^ 2))) ? aN : aN1;
+        return baseA <= maxReqA ? baseA : maxReqA;
     }
 
-    public int getTotalSignleDirection() {
+    /* ******
+     * TODO Get rid of this BS (or at least make it work properly)
+     ****** */
+
+    public int getTotalSingleDirection() {
         return total;
     }
 
@@ -64,7 +67,7 @@ public class CoordsStrategyRectangularCounter {
         return total * 4;
     }
 
-    public int getNumberOfRequestsSignleDirection() {
+    public int getNumberOfRequestsSingleDirection() {
         return numberOfRequests;
     }
 
@@ -78,10 +81,6 @@ public class CoordsStrategyRectangularCounter {
 
     public int getSideSize() {
         return sideSize;
-    }
-
-    public int getRequestDataLimit() {
-        return requestDataLimit;
     }
 
     public int getSize() {
