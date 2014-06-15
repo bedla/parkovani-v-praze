@@ -7,18 +7,18 @@ import com.google.common.base.Preconditions;
  */
 public class Coordination {
 
-    private int id;
+    private String id;
 
     private String value;
 
-    public Coordination(int id, String value) {
+    public Coordination(String id, String value) {
         Preconditions.checkNotNull(value);
 
         this.id = id;
         this.value = value;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
