@@ -47,7 +47,7 @@ public class CsvLoader {
     public void load() {
 
         String typesStr = Joiner.on(":").join(types);
-        String query = "CREATE (:" + typesStr + " { kid: \"%s\", lat : %s, lng : %s })";
+        String query = "CREATE (:" + typesStr + " { kid: \"%s\", lat : %s, lng : %s, typ : \"%s\", hodiny : \"%s\", tarif : \"%s\"})";
 
         List<String> requestLines = Lists.newArrayList();
 
@@ -70,6 +70,9 @@ public class CsvLoader {
                 Double lat = null;
                 Double lng = null;
                 String kid = null;
+                String typ = null;
+                String hodiny = null;
+                String tarif = null;
                 for (int i = 0, n = values.size(); i < n; i++) {
                     String val = values.get(i);
                     String col = map.get(i);
@@ -83,14 +86,26 @@ public class CsvLoader {
                         case "lng":
                             lng = Doubles.tryParse(val);
                             break;
+                        case "typ":
+                            typ = val;
+                            break;
+                        case "hodiny":
+                            hodiny = val;
+                            break;
+                        case "tarif_kc_h":
+                            tarif = val;
+                            break;
                     }
                 }
 
                 Preconditions.checkNotNull(kid, "KID if NULL for [%s]", line);
                 Preconditions.checkNotNull(lat, "Lat if NULL for [%s]", line);
                 Preconditions.checkNotNull(lng, "Lng if NULL for [%s]", line);
+                Preconditions.checkNotNull(typ, "TYP if NULL for [%s]", line);
+                Preconditions.checkNotNull(hodiny, "HODINY if NULL for [%s]", line);
+                Preconditions.checkNotNull(tarif, "TARIF if NULL for [%s]", line);
 
-                requestLines.add(String.format(query, kid, lat, lng));
+                requestLines.add(String.format(query, kid, lat, lng, typ, hodiny, tarif));
             }
 
 
