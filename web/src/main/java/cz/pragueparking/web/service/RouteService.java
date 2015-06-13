@@ -25,8 +25,19 @@ public class RouteService {
 
         final List<Integer> listStartAutomaty = jdbcTemplate.queryForList(sql, Integer.class);
 
+        final int uid;
         if (listStartAutomaty.size() == 0) {
-            return Lists.newArrayList();
+            final String point = String.format("%s %s", doubles[0], doubles[1]);
+            final String sqlClosest = String.format("SELECT uid  FROM DOP_ZPS_Automaty_b_buffer20 as t where ST_Distance(t.the_geom, 'POINT(%s)') > 0 order by ST_Distance(t.the_geom, 'POINT(%s)') limit 1", point, point);
+
+            final Integer id = jdbcTemplate.queryForObject(sqlClosest, Integer.class);
+            if (id != null) {
+                uid = id;
+            } else {
+                return Lists.newArrayList();
+            }
+        } else {
+            uid = listStartAutomaty.get(0);
         }
 
         final List<Route> routes = jdbcTemplate.query("select p.*, a.the_geom as source_point, b.the_geom as target_point\n" +
@@ -47,7 +58,7 @@ public class RouteService {
                         rs.getString(9),
                         rs.getString(10));
             }
-        }, listStartAutomaty.get(0));
+        }, uid);
 
         return routes;
     }
