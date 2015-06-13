@@ -1,6 +1,7 @@
 package cz.pragueparking.dataloader;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -22,7 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StopWatch;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplate;
 
 import java.util.*;
 
@@ -61,7 +64,7 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
 
         loadGraphWithDataFromDb(size, completeGraph);
 
-        final Set<AutomatEdge> set = Sets.newHashSet();
+        final Set<AutomatEdge> automatEdges = Sets.newHashSet();
         final Iterator<AutomatVertex> graphIterator = new DepthFirstIterator<>(completeGraph);
         while (graphIterator.hasNext()) {
             final AutomatVertex vertex = graphIterator.next();
@@ -70,24 +73,43 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
             for (DefaultEdge edge : edges) {
                 AutomatVertex source = completeGraph.getEdgeSource(edge);
                 AutomatVertex target = completeGraph.getEdgeTarget(edge);
-                set.add(new AutomatEdge(source, target));
+                automatEdges.add(new AutomatEdge(source, target));
             }
         }
 
-        final Point point1 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(50.127622, 14.315186)}), geometryFactory);
-        final Point point2 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(50.165463, 14.026794)}), geometryFactory);
-
-        final Path computedPath = graphHopperGetPath(point1, point2);
-
-        System.out.println(computedPath);
+        final int count = automatEdges.size();
+        int idx = 0;
+        final StopWatch stopWatch = new StopWatch();
+        for (AutomatEdge automatEdge : automatEdges) {
+            stopWatch.start("route");
+            final Path computedPath = graphHopperGetPath(automatEdge.source, automatEdge.target);
+            stopWatch.stop();
+//            System.out.println(computedPath.distance);
+            if (idx % 1000 == 0) {
+                System.out.println(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
+            }
+            idx++;
+        }
+        System.out.println(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
+        System.out.println(stopWatch.prettyPrint());
+//        System.out.println(computedPath);
 
     }
 
-    private Path graphHopperGetPath(Point point1, Point point2) {
-        final String point1Str = String.format("%s,%s", point1.getX(), point1.getY());
-        final String point2Str = String.format("%s,%s", point2.getX(), point2.getY());
+    private Path graphHopperGetPath(AutomatVertex vertex1, AutomatVertex vertex2) {
 
-        final ResponseEntity<Map> entity = restTemplate.getForEntity(routeUrl + "?point={point1}&point={point2}&type=json&instructions=false", Map.class, point1Str, point2Str);
+        final double[] doubles1 = Utils.transformMercatorToWgs84(vertex1.point.getX(), vertex1.point.getY());
+        final double[] doubles2 = Utils.transformMercatorToWgs84(vertex2.point.getX(), vertex2.point.getY());
+
+        final Point point1 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(doubles1[1], doubles1[0])}), geometryFactory);
+        final Point point2 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(doubles2[1], doubles2[0])}), geometryFactory);
+
+        final String url = routeUrl + "?point={point1}&point={point2}&type=json&instructions=false";
+        final Map<String, Object> urlVariables = Maps.newHashMap();
+        urlVariables.put("point1", String.format("%s,%s", point1.getX(), point1.getY()));
+        urlVariables.put("point2", String.format("%s,%s", point2.getX(), point2.getY()));
+
+        final ResponseEntity<Map> entity = restTemplate.getForEntity(url, Map.class, urlVariables);
 
         Preconditions.checkState(entity.getStatusCode().is2xxSuccessful(), entity);
 
@@ -100,20 +122,23 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
         final Map<?, ?> path = ((Map<?, ?>) pathObj);
 
         final Object distanceObj = path.get("distance");
+        Preconditions.checkState(distanceObj instanceof Number, distanceObj);
+        final double distance = ((Number) distanceObj).doubleValue();
+
+        Preconditions.checkState(distance != 0, "Unable to route for URL %s", new UriTemplate(url).expand(urlVariables));
+
         final Object bboxObj = path.get("bbox");
         final Object weightObj = path.get("weight");
         final Object timeObj = path.get("time");
         final Object pointsObj = path.get("points");
 
-        Preconditions.checkState(distanceObj instanceof Double, distanceObj);
         Preconditions.checkState(bboxObj instanceof List, bboxObj);
-        Preconditions.checkState(weightObj instanceof Double, weightObj);
+        Preconditions.checkState(weightObj instanceof Number, weightObj);
         Preconditions.checkState(timeObj instanceof Integer, timeObj);
         Preconditions.checkState(pointsObj instanceof String, pointsObj);
 
-        final double distance = (double) distanceObj;
         final List<?> bbox = (List<?>) bboxObj;
-        final double weight = (double) weightObj;
+        final double weight = ((Number) weightObj).doubleValue();
         final int time = (int) timeObj;
         final String points = (String) pointsObj;
 
