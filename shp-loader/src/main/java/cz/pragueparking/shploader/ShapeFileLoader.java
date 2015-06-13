@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan
 @EnableAutoConfiguration
 @SpringBootApplication
-@ConfigurationProperties(prefix = "my")
 public class ShapeFileLoader {
     public static void main(String[] args) {
 

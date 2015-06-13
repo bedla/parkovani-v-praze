@@ -17,6 +17,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>shp-loader</module>
+        <module>graph-data-loader</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -41,6 +42,22 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>h2spatial-ext</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>18.0</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
 
     <repositories>
