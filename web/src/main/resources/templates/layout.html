@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Bootstrap 101 Template</title>
+
+    <link rel="stylesheet" th:href="@{/bootstrap-3.3.4/css/bootstrap.css}"
+          href="../static/bootstrap-3.3.4/css/bootstrap.css"/>
+
+    <!--<script th:href="@(/js/jquery-2.1.4.js)" src="../static/js/jquery-2.1.4.js"></script>-->
+</head>
+<body>
+<h1 layout:fragment="header">Header</h1>
+
+<div layout:fragment="content">
+    Fake content
+</div>
+
+</body>
+</html>

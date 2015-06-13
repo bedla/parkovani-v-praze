@@ -18,6 +18,7 @@
     <modules>
         <module>shp-loader</module>
         <module>graph-data-loader</module>
+        <module>web</module>
     </modules>
     <packaging>pom</packaging>
 
