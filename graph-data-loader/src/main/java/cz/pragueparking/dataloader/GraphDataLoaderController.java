@@ -1,12 +1,15 @@
 package cz.pragueparking.dataloader;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import org.h2.api.ErrorCode;
 import org.jgrapht.Graph;
 import org.jgrapht.VertexFactory;
 import org.jgrapht.generate.CompleteGraphGenerator;
@@ -21,19 +24,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.StopWatch;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @Controller
 public class GraphDataLoaderController implements CommandLineRunner, InitializingBean {
 
+    public static final String PATHS_TABLE = "PATHS";
     private static final Logger LOG = LoggerFactory.getLogger(GraphDataLoaderController.class);
-
     @Value("${dbDataDir}")
     private String dbDataDir;
 
@@ -56,13 +62,78 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
 
     @Override
     public void run(String... args) throws Exception {
+        LOG.info("=== Start ===");
 
         final Integer size = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM DOP_ZPS_Automaty_b", Integer.class);
         LOG.info("Size of complete graph will be " + size);
 
         final Graph<AutomatVertex, DefaultEdge> completeGraph = generateCompleteGraph(size);
-
         loadGraphWithDataFromDb(size, completeGraph);
+        final List<Path> paths = getPathsFromGraphHopper(completeGraph);
+        savePathsIntoDb(paths);
+
+        LOG.info("=== End ===");
+    }
+
+    private void savePathsIntoDb(List<Path> paths) throws SQLException {
+        LOG.info("--- savePathsIntoDb ---");
+
+        try {
+
+            final int pathsCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, PATHS_TABLE);
+            if (pathsCount > 0) {
+                JdbcTestUtils.deleteFromTables(jdbcTemplate, PATHS_TABLE);
+            }
+
+        } catch (BadSqlGrammarException e) {
+            switch (e.getSQLException().getErrorCode()) {
+                case ErrorCode.TABLE_OR_VIEW_NOT_FOUND_1:
+
+                    jdbcTemplate.execute(new StringBuilder()
+                            .append("CREATE TABLE ").append(PATHS_TABLE).append(" (\n")
+                            .append(" id INT PRIMARY KEY AUTO_INCREMENT,\n")
+                            .append(" source_uid INT,\n")
+                            .append(" target_uid INT,\n")
+                            .append(" distance DOUBLE,\n")
+                            .append(" bbox VARCHAR,\n")
+                            .append(" weight DOUBLE,\n")
+                            .append(" time INT,\n")
+                            .append(" points CLOB\n")
+                            .append(");").toString());
+
+                    jdbcTemplate.execute(String.format("CREATE UNIQUE INDEX IDX_source_target ON %s (source_uid, target_uid);", PATHS_TABLE));
+                    jdbcTemplate.execute(String.format("CREATE INDEX IDX_source_uid ON %s (source_uid);", PATHS_TABLE));
+                    jdbcTemplate.execute(String.format("CREATE INDEX IDX_target_uid ON %s (target_uid);", PATHS_TABLE));
+                    jdbcTemplate.execute(String.format("CREATE INDEX IDX_distance ON %s (distance);", PATHS_TABLE));
+                    jdbcTemplate.execute(String.format("CREATE INDEX IDX_time ON %s (time);", PATHS_TABLE));
+
+                    break;
+                default:
+                    throw e;
+            }
+        }
+
+        final String insertSql = "INSERT INTO " + PATHS_TABLE + " (source_uid, target_uid, distance, bbox, weight, time, points) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.batchUpdate(insertSql, paths, paths.size(), (ps, argument) -> {
+            ps.setInt(1, argument.source.uid);
+            ps.setInt(2, argument.target.uid);
+            ps.setDouble(3, argument.distance);
+            ps.setString(4, Joiner.on(',').join(argument.bbox));
+            ps.setDouble(5, argument.weight);
+            ps.setInt(6, argument.time);
+            ps.setString(7, argument.points);
+        });
+
+
+//        System.out.println(JdbcTestUtils.countRowsInTable(jdbcTemplate, PATHS_TABLE));
+//        List<Map<String, Object>> list = jdbcTemplate.queryForList("SELECT * FROM " + PATHS_TABLE);
+//        for (Map<String, Object> map : list) {
+//            System.out.println(map);
+//        }
+    }
+
+    private List<Path> getPathsFromGraphHopper(Graph<AutomatVertex, DefaultEdge> completeGraph) {
+        LOG.info("--- getPathsFromGraphHopper ---");
 
         final Set<AutomatEdge> automatEdges = Sets.newHashSet();
         final Iterator<AutomatVertex> graphIterator = new DepthFirstIterator<>(completeGraph);
@@ -77,23 +148,25 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
             }
         }
 
+        final List<Path> paths = Lists.newArrayList();
+
         final int count = automatEdges.size();
         int idx = 0;
-        final StopWatch stopWatch = new StopWatch();
+        final StopWatch stopWatch = new StopWatch("route");
         for (AutomatEdge automatEdge : automatEdges) {
-            stopWatch.start("route");
+            if (idx == 10) break;
+            stopWatch.start();
             final Path computedPath = graphHopperGetPath(automatEdge.source, automatEdge.target);
+            paths.add(computedPath);
             stopWatch.stop();
-//            System.out.println(computedPath.distance);
             if (idx % 1000 == 0) {
-                System.out.println(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
+                LOG.info(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
             }
             idx++;
         }
-        System.out.println(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
-        System.out.println(stopWatch.prettyPrint());
-//        System.out.println(computedPath);
-
+        LOG.info(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
+        LOG.info(stopWatch.shortSummary());
+        return paths;
     }
 
     private Path graphHopperGetPath(AutomatVertex vertex1, AutomatVertex vertex2) {
@@ -134,19 +207,20 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
 
         Preconditions.checkState(bboxObj instanceof List, bboxObj);
         Preconditions.checkState(weightObj instanceof Number, weightObj);
-        Preconditions.checkState(timeObj instanceof Integer, timeObj);
+        Preconditions.checkState(timeObj instanceof Number, timeObj);
         Preconditions.checkState(pointsObj instanceof String, pointsObj);
 
         final List<?> bbox = (List<?>) bboxObj;
         final double weight = ((Number) weightObj).doubleValue();
-        final int time = (int) timeObj;
+        final int time = ((Number) timeObj).intValue();
         final String points = (String) pointsObj;
 
-        return new Path(null, null, distance, bbox, weight, time, points);
+        return new Path(vertex1, vertex2, distance, bbox, weight, time, points);
     }
 
 
     private void loadGraphWithDataFromDb(Integer size, Graph<AutomatVertex, DefaultEdge> completeGraph) {
+        LOG.info("--- loadGraphWithDataFromDb ---");
         LOG.info("Loading data from db into complete graph");
 
         final List<Map<String, Object>> dbList = jdbcTemplate.queryForList("SELECT * FROM DOP_ZPS_Automaty_b");
@@ -173,6 +247,8 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
     }
 
     private Graph<AutomatVertex, DefaultEdge> generateCompleteGraph(int size) {
+        LOG.info("--- generateCompleteGraph ---");
+
         //Create the CompleteGraphGenerator object
         final Graph<AutomatVertex, DefaultEdge> completeGraph = new SimpleGraph<>(DefaultEdge.class);
         final CompleteGraphGenerator<AutomatVertex, DefaultEdge> completeGenerator = new CompleteGraphGenerator<>(size);

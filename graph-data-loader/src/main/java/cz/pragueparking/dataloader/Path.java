@@ -3,8 +3,8 @@ package cz.pragueparking.dataloader;
 import java.util.List;
 
 public class Path {
-    public AutomatEdge source;
-    public AutomatEdge target;
+    public AutomatVertex source;
+    public AutomatVertex target;
 
     public double distance;
     public List<?> bbox;
@@ -12,7 +12,7 @@ public class Path {
     public int time;
     public String points;
 
-    public Path(AutomatEdge source, AutomatEdge target, double distance, List<?> bbox, double weight, int time, String points) {
+    public Path(AutomatVertex source, AutomatVertex target, double distance, List<?> bbox, double weight, int time, String points) {
         this.source = source;
         this.target = target;
         this.distance = distance;
