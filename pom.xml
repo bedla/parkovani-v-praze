@@ -19,6 +19,7 @@
         <module>shp-loader</module>
         <module>graph-data-loader</module>
         <module>web</module>
+        <module>utils</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -46,6 +47,27 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>shp-loader</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>graph-data-loader</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.orbisgis</groupId>
                 <artifactId>h2spatial-ext</artifactId>

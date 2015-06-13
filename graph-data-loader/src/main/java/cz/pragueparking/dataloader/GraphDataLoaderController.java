@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import cz.pragueparking.utils.Utils;
 import org.h2.api.ErrorCode;
 import org.jgrapht.Graph;
 import org.jgrapht.VertexFactory;
@@ -172,7 +173,7 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
         LOG.info(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
         LOG.info(stopWatch.shortSummary());
         if (errors > 0) {
-            LOG.error("Errors count is {} which is {} from all data {}", errors, String.format("%.4f %s", (float)errors / (float)automatEdges.size() * 100.0f, "%"), automatEdges.size());
+            LOG.error("Errors count is {} which is {} from all data {}", errors, String.format("%.4f %s", (float) errors / (float) automatEdges.size() * 100.0f, "%"), automatEdges.size());
         }
         return paths;
     }
