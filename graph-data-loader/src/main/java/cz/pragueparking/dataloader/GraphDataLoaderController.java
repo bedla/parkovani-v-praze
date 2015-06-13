@@ -152,12 +152,17 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
 
         final int count = automatEdges.size();
         int idx = 0;
+        int errors = 0;
         final StopWatch stopWatch = new StopWatch("route");
         for (AutomatEdge automatEdge : automatEdges) {
-            if (idx == 10) break;
+//            if (idx == 10) break;
             stopWatch.start();
             final Path computedPath = graphHopperGetPath(automatEdge.source, automatEdge.target);
-            paths.add(computedPath);
+            if (computedPath != null) {
+                paths.add(computedPath);
+            } else {
+                errors++;
+            }
             stopWatch.stop();
             if (idx % 1000 == 0) {
                 LOG.info(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
@@ -166,13 +171,19 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
         }
         LOG.info(String.format("%.2f %s", (float) idx / (float) count * 100.0f, "%"));
         LOG.info(stopWatch.shortSummary());
+        if (errors > 0) {
+            LOG.error("Errors count is {} which is {} from all data {}", errors, String.format("%.4f %s", (float)errors / (float)automatEdges.size() * 100.0f, "%"), automatEdges.size());
+        }
         return paths;
     }
 
     private Path graphHopperGetPath(AutomatVertex vertex1, AutomatVertex vertex2) {
 
-        final double[] doubles1 = Utils.transformMercatorToWgs84(vertex1.point.getX(), vertex1.point.getY());
-        final double[] doubles2 = Utils.transformMercatorToWgs84(vertex2.point.getX(), vertex2.point.getY());
+        double[] doubles1 = Utils.transformMercatorToWgs84(vertex1.point.getX(), vertex1.point.getY());
+        double[] doubles2 = Utils.transformMercatorToWgs84(vertex2.point.getX(), vertex2.point.getY());
+
+        doubles1 = Utils.roundTo(doubles1, 6);
+        doubles2 = Utils.roundTo(doubles2, 6);
 
         final Point point1 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(doubles1[1], doubles1[0])}), geometryFactory);
         final Point point2 = new Point(new CoordinateArraySequence(new Coordinate[]{new Coordinate(doubles2[1], doubles2[0])}), geometryFactory);
@@ -187,35 +198,57 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
         Preconditions.checkState(entity.getStatusCode().is2xxSuccessful(), entity);
 
         final Map<?, ?> body = entity.getBody();
-        final Object pathsObj = body.get("paths");
-        Preconditions.checkState(pathsObj instanceof List, pathsObj);
-        Preconditions.checkState(!((List) pathsObj).isEmpty(), pathsObj);
-        final Object pathObj = ((List<?>) pathsObj).get(0);
-        Preconditions.checkState(pathObj instanceof Map, pathObj);
-        final Map<?, ?> path = ((Map<?, ?>) pathObj);
 
-        final Object distanceObj = path.get("distance");
-        Preconditions.checkState(distanceObj instanceof Number, distanceObj);
-        final double distance = ((Number) distanceObj).doubleValue();
+        if (isNotFoundErrorInResponse(body)) {
+            LOG.error("Unable to route for URL {}", new UriTemplate(url).expand(urlVariables));
+            return null;
+        } else {
 
-        Preconditions.checkState(distance != 0, "Unable to route for URL %s", new UriTemplate(url).expand(urlVariables));
+            final Object pathsObj = body.get("paths");
+            Preconditions.checkState(pathsObj instanceof List, pathsObj);
+            Preconditions.checkState(!((List) pathsObj).isEmpty(), pathsObj);
+            final Object pathObj = ((List<?>) pathsObj).get(0);
+            Preconditions.checkState(pathObj instanceof Map, pathObj);
+            final Map<?, ?> path = ((Map<?, ?>) pathObj);
 
-        final Object bboxObj = path.get("bbox");
-        final Object weightObj = path.get("weight");
-        final Object timeObj = path.get("time");
-        final Object pointsObj = path.get("points");
+            final Object distanceObj = path.get("distance");
+            Preconditions.checkState(distanceObj instanceof Number, distanceObj);
+            final double distance = ((Number) distanceObj).doubleValue();
 
-        Preconditions.checkState(bboxObj instanceof List, bboxObj);
-        Preconditions.checkState(weightObj instanceof Number, weightObj);
-        Preconditions.checkState(timeObj instanceof Number, timeObj);
-        Preconditions.checkState(pointsObj instanceof String, pointsObj);
+            Preconditions.checkState(distance != 0, "Unable to route for URL %s", new UriTemplate(url).expand(urlVariables));
 
-        final List<?> bbox = (List<?>) bboxObj;
-        final double weight = ((Number) weightObj).doubleValue();
-        final int time = ((Number) timeObj).intValue();
-        final String points = (String) pointsObj;
+            final Object bboxObj = path.get("bbox");
+            final Object weightObj = path.get("weight");
+            final Object timeObj = path.get("time");
+            final Object pointsObj = path.get("points");
 
-        return new Path(vertex1, vertex2, distance, bbox, weight, time, points);
+            Preconditions.checkState(bboxObj instanceof List, bboxObj);
+            Preconditions.checkState(weightObj instanceof Number, weightObj);
+            Preconditions.checkState(timeObj instanceof Number, timeObj);
+            Preconditions.checkState(pointsObj instanceof String, pointsObj);
+
+            final List<?> bbox = (List<?>) bboxObj;
+            final double weight = ((Number) weightObj).doubleValue();
+            final int time = ((Number) timeObj).intValue();
+            final String points = (String) pointsObj;
+
+            return new Path(vertex1, vertex2, distance, bbox, weight, time, points);
+        }
+    }
+
+    private boolean isNotFoundErrorInResponse(Map<?, ?> body) {
+        Object infoObj = body.get("info");
+        if (infoObj instanceof Map) {
+            Object errorsObj = ((Map) infoObj).get("errors");
+            if (errorsObj instanceof List && ((List) errorsObj).size() > 0 && ((List) errorsObj).get(0) instanceof Map) {
+                Object message = ((Map) ((List) errorsObj).get(0)).get("message");
+                if (message instanceof String && "Not found" .equals(message)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

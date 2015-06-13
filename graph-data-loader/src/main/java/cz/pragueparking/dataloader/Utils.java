@@ -52,4 +52,18 @@ public class Utils {
         return new double[]{projCoordinate.x, projCoordinate.y};
     }
 
+    public static double[] roundTo(double[] array, int places) {
+
+        array = array.clone();
+        for (int i = 0; i < array.length; i++) {
+            array[i] = roundTo(array[i], places);
+        }
+        return array;
+    }
+
+
+    public static double roundTo(double value, int places) {
+        final double c = (places < 0 ? 1.0 : Math.pow(10.0, places));
+        return Math.round(value * c) / c;
+    }
 }
