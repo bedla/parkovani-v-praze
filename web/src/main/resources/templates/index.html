@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorator="layout">
+<html
+        xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+        layout:decorator="layout">
 <head>
-    <title>Messages : View all</title>
+    <title>Parkovani v praze</title>
 </head>
 <body>
-<h1 layout:fragment="header">Messages : View all</h1>
 
 <div layout:fragment="content" class="container">
-    Hello world
+
+    <div class="jumbotron">
+        <h1>Parkovani v praze</h1>
+        <p>V mape vyberte, pred kterym Automatem se prave nachazite</p>
+        <div class="progress">
+            <div id="progress" class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <span class="sr-only">Loading</span>
+            </div>
+        </div>
+    </div>
+    <div id="map" class="map"></div>
+
 </div>
 </body>
 </html>

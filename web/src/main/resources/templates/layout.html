@@ -4,15 +4,24 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Bootstrap 101 Template</title>
+    <title>Parkovani v praze</title>
 
     <link rel="stylesheet" th:href="@{/bootstrap-3.3.4/css/bootstrap.css}"
           href="../static/bootstrap-3.3.4/css/bootstrap.css"/>
 
-    <!--<script th:href="@(/js/jquery-2.1.4.js)" src="../static/js/jquery-2.1.4.js"></script>-->
+    <script th:src="@{/js/jquery-2.1.4.js}" src="../static/js/jquery-2.1.4.js"></script>
+    <script th:src="@{/bootstrap-3.3.4/js/bootstrap.js}" src="../static/bootstrap-3.3.4/js/bootstrap.js"></script>
+    <script th:src="@{/js/scripts.js}" src="../static/js/scripts.js"></script>
+    <link rel="stylesheet" href="http://openlayers.org/en/v3.6.0/css/ol.css" type="text/css"/>
+    <style>
+        .map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="http://openlayers.org/en/v3.6.0/build/ol-debug.js" type="text/javascript"></script>
 </head>
 <body>
-<h1 layout:fragment="header">Header</h1>
 
 <div layout:fragment="content">
     Fake content
