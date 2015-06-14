@@ -191,6 +191,20 @@ $(document).ready(function () {
 
             vectorSource.addFeatures(featuresToLayer);
 
+            if (fromAjax) {
+                var $ol = $('<ol></ol>');
+
+                for (var i = 0; i < currentRoutes.ajaxData.length; i++) {
+                    var d = parseFloat(currentRoutes.ajaxData[i].distance) / 1000;
+                    d = Math.round(d * 1000) / 1000;
+
+                    var m = moment.duration(parseInt(currentRoutes.ajaxData[i].time)).humanize();
+
+                    $ol.append($('<li></li>').append(d + ' km (' + m + ')'));
+                }
+
+                $("#output").html($ol);
+            }
         },
         callRoute = function (x, y) {
             $("#progress").show();
