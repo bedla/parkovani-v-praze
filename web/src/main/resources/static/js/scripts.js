@@ -216,7 +216,7 @@ $(document).ready(function () {
             $.ajax({
                 method: "GET",
                 url: "/route",
-                data: {lat: data[1], lng: data[0]}
+                data: {lat: data[1], lng: data[0], count: parseInt($("#count").val())}
             }).done(function (data) {
                 $("#progress").hide();
 

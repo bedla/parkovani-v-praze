@@ -1,5 +1,6 @@
 package cz.pragueparking.web;
 
+import com.google.common.collect.Range;
 import cz.pragueparking.web.dto.Route;
 import cz.pragueparking.web.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class RouteRestController {
     private RouteService routeService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Route> getRoute(@RequestParam double lat, @RequestParam double lng) {
-        return routeService.findRoutes(lat, lng);
+    public List<Route> getRoute(@RequestParam double lat, @RequestParam double lng, @RequestParam int count) {
+        return routeService.findRoutes(lat, lng, Range.closed(10, 20).contains(count) ? count : 10);
     }
 
 }
