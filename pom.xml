@@ -20,6 +20,7 @@
         <module>graph-data-loader</module>
         <module>web</module>
         <module>utils</module>
+        <module>geocoding</module>
     </modules>
     <packaging>pom</packaging>
 
