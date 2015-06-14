@@ -18,6 +18,26 @@
             height: 100%;
             width: 100%;
         }
+
+        #info {
+            position: absolute;
+            height: 1px;
+            width: 1px;
+            z-index: 100;
+        }
+
+        .tooltip.in {
+            opacity: 1;
+            filter: alpha(opacity=100);
+        }
+
+        .tooltip.top .tooltip-arrow {
+            border-top-color: white;
+        }
+
+        .tooltip-inner {
+            border: 2px solid white;
+        }
     </style>
     <script src="http://openlayers.org/en/v3.6.0/build/ol-debug.js" type="text/javascript"></script>
     <script src="http://momentjs.com/downloads/moment.js" type="text/javascript"></script>

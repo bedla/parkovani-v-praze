@@ -62,13 +62,13 @@ $(document).ready(function () {
                         url: 'http://{a-c}.tile.osm.org/{z}/{x}/{y}.png'
                     })
                 }),
-                wmsLayerZony,
                 wmsLayerZonyAutomaty,
+                wmsLayerZony,
                 vectorLayer
             ],
             view: new ol.View({
-                center: ol.proj.transform([14.3980231, 50.0682351], 'EPSG:4326', 'EPSG:3857'),
-                zoom: 12
+                center: ol.proj.transform([14.4292225, 50.081304], 'EPSG:4326', 'EPSG:3857'),
+                zoom: 13
             })
         }),
         decodePath = function (encoded, is3D) {
@@ -122,8 +122,9 @@ $(document).ready(function () {
             // console.log("decoded " + len + " coordinates in " + ((end - start) / 1000) + "s");
             return array;
         },
-        createPointFeature = function (wktPoint, icon, opacity, index, type) {
+        createPointFeature = function (wktPoint, icon, opacity, index, type, tooltip) {
 
+            tooltip = tooltip || [];
             var point = new ol.format.WKT().readGeometry(wktPoint);
 
             var iconStyle = new ol.style.Style({
@@ -141,6 +142,7 @@ $(document).ready(function () {
 
             pointFeature.set('parkovani.index', index);
             pointFeature.set('parkovani.type', type);
+            pointFeature.set('parkovani.tooltip', tooltip);
 
             return pointFeature;
         },
@@ -171,7 +173,7 @@ $(document).ready(function () {
                 currentRoutes.pathFeatures = [];
                 for (var i = 0; i < currentRoutes.ajaxData.length; i++) {
                     currentRoutes.pathFeatures.push(createPathFeature(decodePath(currentRoutes.ajaxData[i].points), i, 'path'));
-                    currentRoutes.automatFeatures.push(createPointFeature(currentRoutes.ajaxData[i].targetPoint, 'parking-meter', 1, i, 'automat'));
+                    currentRoutes.automatFeatures.push(createPointFeature(currentRoutes.ajaxData[i].targetPoint, 'parking-meter', 1, i, 'automat', currentRoutes.ajaxData[i].tooltip));
                 }
 
                 currentRoutes.carFeature = createPointFeature(currentRoutes.ajaxData[0].sourcePoint, 'car', 1, -1, 'car')
@@ -200,7 +202,16 @@ $(document).ready(function () {
 
                     var m = moment.duration(parseInt(currentRoutes.ajaxData[i].time)).humanize();
 
-                    $ol.append($('<li></li>').append(d + ' km (' + m + ')'));
+                    var name = currentRoutes.ajaxData[i].targetName;
+
+                    var $a = $('<a href="#" data-parkovani-id="' + i + '"></a>');
+                    $a.append(name);
+                    $a.on('click', function (e) {
+                        currentRoutes.selectedPath = parseInt($(this).data('parkovani-id'));
+                        updateRoutes(false);
+                    });
+
+                    $ol.append($('<li></li>').append($a).append(' ' + d + ' km (' + m + ')'));
                 }
 
                 $("#output").html($ol);
@@ -268,13 +279,41 @@ $(document).ready(function () {
                         color: 'rgba(255,255,255,0.4)'
                     }),
                     stroke: new ol.style.Stroke({
-                        color: '#3399CC',
+                        color: '#000000',
                         width: width
                     })
                 })
             ];
             return styles;
+        },
+        info = $('#info'),
+        displayFeatureInfo = function (pixel) {
+
+            var offset = $('#map').offset();
+            info.css({
+                left: (offset.left + pixel[0]) + 'px',
+                top: (offset.top + pixel[1] - 15) + 'px'
+            });
+            var feature = map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+                return feature;
+            });
+
+            if (feature && feature.get("parkovani.type") == "automat") {
+
+                var tooltip = feature.get('parkovani.tooltip');
+                info.tooltip('hide')
+                    .attr('data-original-title', tooltip.join(", "))
+                    .tooltip('fixTitle')
+                    .tooltip('show');
+            } else {
+                info.tooltip('hide');
+            }
         };
+
+    info.tooltip({
+        animation: false,
+        trigger: 'manual'
+    });
 
     vectorLayer.setStyle(styleFunction);
 
@@ -286,6 +325,7 @@ $(document).ready(function () {
             function (feature, layer) {
                 return feature;
             });
+
         if (feature) {
             if (feature.get("parkovani.type") == "automat") {
                 currentRoutes.selectedPath = parseInt(feature.get("parkovani.index"));
@@ -296,6 +336,14 @@ $(document).ready(function () {
         }
 
 
+    });
+
+    map.on('pointermove', function (evt) {
+        if (evt.dragging) {
+            info.tooltip('hide');
+            return;
+        }
+        displayFeatureInfo(map.getEventPixel(evt.originalEvent));
     });
 
 });

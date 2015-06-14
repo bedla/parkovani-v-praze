@@ -18,14 +18,14 @@
     </nav>
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="well">
-                <h1>Parkovani v praze</h1>
+                <h1>Parkovani v Praze</h1>
 
                 <p>V mape vyberte, pred kterym Automatem se prave nachazite</p>
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-6">
 
                         <div class="progress">
                             <div id="progress" class="progress-bar progress-bar-striped active" role="progressbar"
@@ -34,13 +34,19 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <select class="form-control" id="count">
-                                    <option>10</option>
-                                    <option>15</option>
-                                    <option>20</option>
+                                    <option value="10" selected="selected">10 routes</option>
+                                    <option value="15">15 routes</option>
+                                    <option value="20">20 routes</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="orderType">
+                                    <option value="DISTANCE" selected="selected">by distance</option>
+                                    <option value="TIME">by time</option>
                                 </select>
                             </div>
                         </div>
@@ -49,14 +55,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div id="output" class="alert alert-success" role="alert"
                  style="max-height: 180px; overflow-y: scroll;"></div>
         </div>
     </div>
 
 
-    <div id="map" class="map"></div>
+    <div id="map" class="map">
+        <div id="info"></div>
+    </div>
 
     <nav class="navbar navbar-default">
         <div class="container">

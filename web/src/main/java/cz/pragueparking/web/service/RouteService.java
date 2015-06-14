@@ -40,12 +40,13 @@ public class RouteService {
             uid = listStartAutomaty.get(0);
         }
 
-        final List<Route> routes = jdbcTemplate.query("select p.*, a.the_geom as source_point, b.the_geom as target_point\n" +
-                "from PATHS as p \n" +
-                "inner join DOP_ZPS_AUTOMATY_B as a on p.source_uid = a.uid \n" +
-                "inner join DOP_ZPS_AUTOMATY_B as b on p.target_uid = b.uid \n" +
-                "where p.source_uid = ?\n" +
-                "order by distance\n" +
+        final List<Route> routes = jdbcTemplate.query("select p.*, a.the_geom as source_point, b.the_geom as target_point, n.name, n.automat " +
+                "from PATHS as p " +
+                "inner join DOP_ZPS_AUTOMATY_B as a on p.source_uid = a.uid " +
+                "inner join DOP_ZPS_AUTOMATY_B as b on p.target_uid = b.uid " +
+                "left outer join NAMES as n on p.target_uid = n.id " +
+                "where p.source_uid = ? " +
+                "order by distance " +
                 "limit ?", new RowMapper<Route>() {
             @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -56,7 +57,9 @@ public class RouteService {
                         rs.getInt(7),
                         rs.getString(8),
                         rs.getString(9),
-                        rs.getString(10));
+                        rs.getString(10),
+                        rs.getString(11),
+                        rs.getString(12));
             }
         }, uid, count);
 
