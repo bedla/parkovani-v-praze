@@ -18,7 +18,7 @@ public class RouteService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<Route> findRoutes(double lat, double lng, int count) {
+    public List<Route> findRoutes(double lat, double lng, int count, boolean orderByDistance) {
 
         final double[] doubles = Utils.transformWgs84ToMercator(lng, lat);
         final String sql = String.format("SELECT uid FROM DOP_ZPS_Automaty_b_buffer20 as t WHERE ST_Contains(t.the_geom, 'POINT(%s %s)') = TRUE ", doubles[0], doubles[1]);
@@ -46,7 +46,7 @@ public class RouteService {
                 "inner join DOP_ZPS_AUTOMATY_B as b on p.target_uid = b.uid " +
                 "left outer join NAMES as n on p.target_uid = n.id " +
                 "where p.source_uid = ? " +
-                "order by distance " +
+                "order by " + (orderByDistance ? "distance" : "time") + " " +
                 "limit ?", new RowMapper<Route>() {
             @Override
             public Route mapRow(ResultSet rs, int rowNum) throws SQLException {

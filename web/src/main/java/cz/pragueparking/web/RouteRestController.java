@@ -19,8 +19,8 @@ public class RouteRestController {
     private RouteService routeService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Route> getRoute(@RequestParam double lat, @RequestParam double lng, @RequestParam int count) {
-        return routeService.findRoutes(lat, lng, Range.closed(10, 20).contains(count) ? count : 10);
+    public List<Route> getRoute(@RequestParam double lat, @RequestParam double lng, @RequestParam int count, @RequestParam String orderType) {
+        return routeService.findRoutes(lat, lng, Range.closed(10, 20).contains(count) ? count : 10, "distance".equalsIgnoreCase(orderType));
     }
 
 }

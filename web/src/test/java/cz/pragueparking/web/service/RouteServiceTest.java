@@ -26,7 +26,7 @@ public class RouteServiceTest {
     @Test
     public void testFindMore() throws Exception {
 
-        List<Route> routes = routeService.findRoutes(50.09097, 14.41839, 10);
+        List<Route> routes = routeService.findRoutes(50.09097, 14.41839, 10, true);
 
         System.out.println(routes);
     }
