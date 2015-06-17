@@ -12,6 +12,6 @@ Parkování v Praze
 Screenshot
 ==========
 
-![](https://github.com/github/training-kit/blob/master/images/professortocat.png)
+![](https://raw.githubusercontent.com/bedla/parkovani-v-praze/master/screenshot.png)
 
 Note: Old version of application from GIS Data hackaton 2014 at commit https://github.com/bedla/parkovani-v-praze/commit/3258147d0f4f45a128372f72a20a1f6bde4a6a00
