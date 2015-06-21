@@ -31,13 +31,6 @@
     </properties>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -101,7 +94,19 @@
                 <groupId>org.orbisgis</groupId>
                 <artifactId>h2spatial-ext</artifactId>
                 <version>1.2.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.orbisgis</groupId>
+                        <artifactId>h2drivers</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.orbisgis</groupId>
+                <artifactId>h2drivers</artifactId>
+                <version>1.2.2.PATCH</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>

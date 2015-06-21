@@ -21,6 +21,10 @@
             <artifactId>h2spatial-ext</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2drivers</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

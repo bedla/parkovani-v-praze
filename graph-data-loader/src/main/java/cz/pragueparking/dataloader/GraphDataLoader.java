@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 public class GraphDataLoader {
     public static void main(String[] args) {
+        System.setProperty("h2.implicitRelativePath", "true");
         System.setProperty("spring.profiles.active", Utils.activateSpringProfilesAsString());
         SpringApplication.run(GraphDataLoader.class, args);
     }

@@ -46,6 +46,6 @@ public class ShapeFileLoaderController implements CommandLineRunner {
     private void loadData(String file, String tableName) {
 
         LOG.info(String.format("Loading spatial data for %s into table %s", file, tableName));
-        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", rootDataDir + "/" + file, tableName));
+        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", rootDataDir.replace('\\', '/') + "/" + file, tableName));
     }
 }

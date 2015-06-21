@@ -13,12 +13,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ParkingApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws Exception {
+        System.setProperty("h2.implicitRelativePath", "true");
         System.setProperty("spring.profiles.active", Utils.activateSpringProfilesAsString());
         SpringApplication.run(ParkingApplication.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        System.setProperty("h2.implicitRelativePath", "true");
         return application
                 .profiles(Utils.activateSpringProfilesAsArray())
                 .sources(Config.class);
