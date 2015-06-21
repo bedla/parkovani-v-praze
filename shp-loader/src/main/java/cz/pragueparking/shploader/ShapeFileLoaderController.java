@@ -1,5 +1,6 @@
 package cz.pragueparking.shploader;
 
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class ShapeFileLoaderController implements CommandLineRunner {
@@ -27,6 +30,10 @@ public class ShapeFileLoaderController implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        final Path currentWorkingPath = Paths.get("").toAbsolutePath();
+        final Path dbDataPath = Paths.get(dbDataDir).toAbsolutePath();
+        Preconditions.checkState(currentWorkingPath.equals(dbDataPath), "Current working dir %s is not equal to dbDataDir %s", currentWorkingPath, dbDataPath);
+
         FileSystemUtils.deleteRecursively(new File(dbDataDir));
 
         LOG.info("Creating Spatial alias");
@@ -36,36 +43,16 @@ public class ShapeFileLoaderController implements CommandLineRunner {
         jdbcTemplate.execute("CALL SPATIAL_INIT();");
 
         loadData("DOP_ZPS_Stani_l_mercator.shp", "DOP_ZPS_Stani_l");
-        createIndex("DOP_ZPS_Stani_l", "IDX_UID", "UID");
-        createIndex("DOP_ZPS_Stani_l", "IDX_ZONA_L", "ZONA_L");
-
         loadData("DOP_ZachParkoviste_b_mercator.shp", "DOP_ZachParkoviste_b");
-        createIndex("DOP_ZachParkoviste_b", "IDX_UID", "UID");
-
         loadData("DOP_ZachParkoviste_b_mercator-buffer20.shp", "DOP_ZachParkoviste_b_buffer20");
-        createIndex("DOP_ZachParkoviste_b_buffer20", "IDX_UID", "UID");
-
         loadData("DOP_ZPS_Automaty_b_mercator.shp", "DOP_ZPS_Automaty_b");
-        createIndex("DOP_ZPS_Automaty_b_mercator", "IDX_UID", "UID");
-        createIndex("DOP_ZPS_Automaty_b_mercator", "IDX_TYP", "TYP");
-
         loadData("DOP_ZPS_Automaty_b_mercator-buffer20.shp", "DOP_ZPS_Automaty_b_buffer20");
-        createIndex("DOP_ZPS_Automaty_b_buffer20", "IDX_UID", "UID");
-        createIndex("DOP_ZPS_Automaty_b_buffer20", "IDX_TYP", "TYP");
 
     }
 
     private void loadData(String file, String tableName) {
 
         LOG.info(String.format("Loading spatial data for %s into table %s", file, tableName));
-        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", rootDataDir + "/" + file, tableName));
+        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", Paths.get(dbDataDir).relativize(Paths.get(rootDataDir)).toFile() + "/" + file, tableName));
     }
-
-    private void createIndex(String table, String indexName, String... columns) {
-
-        // TODO Spatial tabulka nemuze mit indexy. Podporovany jsou pouze Spatial indexy. Viz org.h2gis.drivers.file_table.H2Table.addIndex()
-//        jdbcTemplate.execute("CREATE INDEX " + indexName + " ON " + table + "(" + Joiner.on(", ").join(columns) + ");");
-
-    }
-
 }

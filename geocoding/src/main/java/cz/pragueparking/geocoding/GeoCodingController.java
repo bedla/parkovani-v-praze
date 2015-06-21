@@ -1,6 +1,7 @@
 package cz.pragueparking.geocoding;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.vividsolutions.jts.geom.Point;
 import cz.pragueparking.utils.Utils;
 import org.h2.api.ErrorCode;
@@ -18,6 +19,8 @@ import org.springframework.util.StopWatch;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +65,10 @@ public class GeoCodingController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        final Path currentWorkingPath = Paths.get("").toAbsolutePath();
+        final Path dbDataPath = Paths.get(dbDataDir).toAbsolutePath();
+        Preconditions.checkState(currentWorkingPath.equals(dbDataPath), "Current working dir %s is not equal to dbDataDir %s", currentWorkingPath, dbDataPath);
 
         ddlOrDelete();
 
