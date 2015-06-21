@@ -26,7 +26,7 @@ $(document).ready(function () {
         wmsLayerZony = new ol.layer.Image({
             source: new ol.source.ImageWMS({
                 ratio: 1,
-                url: 'http://localhost:8181/geoserver/parkovani/wms',
+                url: geoServerUrl + '/parkovani/wms',
                 params: {
                     'FORMAT': wmsFormat,
                     'VERSION': '1.1.1',
@@ -38,7 +38,7 @@ $(document).ready(function () {
         wmsLayerZonyAutomaty = new ol.layer.Image({
             source: new ol.source.ImageWMS({
                 ratio: 1,
-                url: 'http://localhost:8181/geoserver/parkovani/wms',
+                url: geoServerUrl + '/parkovani/wms',
                 params: {
                     'FORMAT': wmsFormat,
                     'VERSION': '1.1.1',
