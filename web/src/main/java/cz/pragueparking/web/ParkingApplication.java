@@ -12,12 +12,15 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ParkingApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws Exception {
+        System.setProperty("spring.profiles.active", "local");
         SpringApplication.run(ParkingApplication.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(Config.class);
+        return application
+                .profiles("server")
+                .sources(Config.class);
     }
 
     @EnableWebMvc
