@@ -302,7 +302,7 @@ $(document).ready(function () {
 
                 var tooltip = feature.get('parkovani.tooltip');
                 info.tooltip('hide')
-                    .attr('data-original-title', tooltip.join(", "))
+                    .attr('data-original-title', tooltip.join("<br/>"))
                     .tooltip('fixTitle')
                     .tooltip('show');
             } else {
