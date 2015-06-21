@@ -4,6 +4,8 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import cz.pragueparking.utils.Utils;
 import cz.pragueparking.web.dto.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,14 +17,19 @@ import java.util.List;
 
 @Service
 public class RouteService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RouteService.class);
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public List<Route> findRoutes(double lat, double lng, int count, boolean orderByDistance) {
+        LOG.info("findRoutes({}, {}, {}, {})", lat, lng, count, orderByDistance);
 
         final double[] doubles = Utils.transformWgs84ToMercator(lng, lat);
         final String sql = String.format("SELECT uid FROM DOP_ZPS_Automaty_b_buffer20 as t WHERE ST_Contains(t.the_geom, 'POINT(%s %s)') = TRUE ", doubles[0], doubles[1]);
 
+        LOG.info("findRoutes.list - {}", sql);
         final List<Integer> listStartAutomaty = jdbcTemplate.queryForList(sql, Integer.class);
 
         final int uid;
@@ -30,6 +37,7 @@ public class RouteService {
             final String point = String.format("%s %s", doubles[0], doubles[1]);
             final String sqlClosest = String.format("SELECT uid  FROM DOP_ZPS_Automaty_b_buffer20 as t where ST_Distance(t.the_geom, 'POINT(%s)') > 0 order by ST_Distance(t.the_geom, 'POINT(%s)') limit 1", point, point);
 
+            LOG.info("findRoutes.closest - {}", sqlClosest);
             final Integer id = jdbcTemplate.queryForObject(sqlClosest, Integer.class);
             if (id != null) {
                 uid = id;
