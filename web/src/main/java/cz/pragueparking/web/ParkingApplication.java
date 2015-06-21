@@ -1,5 +1,6 @@
 package cz.pragueparking.web;
 
+import cz.pragueparking.utils.Utils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
@@ -12,14 +13,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class ParkingApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws Exception {
-        System.setProperty("spring.profiles.active", "local");
+        System.setProperty("spring.profiles.active", Utils.activateSpringProfilesAsString());
         SpringApplication.run(ParkingApplication.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application
-                .profiles("server")
+                .profiles(Utils.activateSpringProfilesAsArray())
                 .sources(Config.class);
     }
 

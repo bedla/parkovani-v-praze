@@ -1,6 +1,5 @@
 package cz.pragueparking.shploader;
 
-import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Controller
 public class ShapeFileLoaderController implements CommandLineRunner {
@@ -29,10 +26,6 @@ public class ShapeFileLoaderController implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        final Path currentWorkingPath = Paths.get("").toAbsolutePath();
-        final Path dbDataPath = Paths.get(dbDataDir).toAbsolutePath();
-        Preconditions.checkState(currentWorkingPath.equals(dbDataPath), "Current working dir %s is not equal to dbDataDir %s", currentWorkingPath, dbDataPath);
 
         FileSystemUtils.deleteRecursively(new File(dbDataDir));
 
@@ -53,6 +46,6 @@ public class ShapeFileLoaderController implements CommandLineRunner {
     private void loadData(String file, String tableName) {
 
         LOG.info(String.format("Loading spatial data for %s into table %s", file, tableName));
-        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", Paths.get(dbDataDir).relativize(Paths.get(rootDataDir)).toFile() + "/" + file, tableName));
+        jdbcTemplate.execute(String.format("CALL FILE_TABLE('%s', '%s');", rootDataDir + "/" + file, tableName));
     }
 }

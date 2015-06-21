@@ -65,10 +65,6 @@ public class GraphDataLoaderController implements CommandLineRunner, Initializin
     @Override
     public void run(String... args) throws Exception {
 
-        final java.nio.file.Path currentWorkingPath = Paths.get("").toAbsolutePath();
-        final java.nio.file.Path dbDataPath = Paths.get(dbDataDir).toAbsolutePath();
-        Preconditions.checkState(currentWorkingPath.equals(dbDataPath), "Current working dir %s is not equal to dbDataDir %s", currentWorkingPath, dbDataPath);
-
         LOG.info("=== Start ===");
 
         final Integer size = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM DOP_ZPS_Automaty_b", Integer.class);

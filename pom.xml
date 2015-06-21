@@ -21,6 +21,7 @@
         <module>web</module>
         <module>utils</module>
         <module>geocoding</module>
+        <module>config</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -30,6 +31,13 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -45,6 +53,21 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>local</id>
+            <properties>
+                <springProfileActivate>local</springProfileActivate>
+            </properties>
+        </profile>
+        <profile>
+            <id>server</id>
+            <properties>
+                <springProfileActivate>server</springProfileActivate>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencyManagement>
         <dependencies>
@@ -66,6 +89,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>config</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

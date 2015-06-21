@@ -66,12 +66,7 @@ public class GeoCodingController implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        final Path currentWorkingPath = Paths.get("").toAbsolutePath();
-        final Path dbDataPath = Paths.get(dbDataDir).toAbsolutePath();
-        Preconditions.checkState(currentWorkingPath.equals(dbDataPath), "Current working dir %s is not equal to dbDataDir %s", currentWorkingPath, dbDataPath);
-
         ddlOrDelete();
-
 
         final List<Object[]> names = geoCodeNames();
 

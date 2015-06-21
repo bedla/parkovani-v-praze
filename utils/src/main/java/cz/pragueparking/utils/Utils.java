@@ -1,9 +1,13 @@
 package cz.pragueparking.utils;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.osgeo.proj4j.*;
 
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 
 public class Utils {
@@ -69,5 +73,24 @@ public class Utils {
     public static double roundTo(double value, int places) {
         final double c = (places < 0 ? 1.0 : Math.pow(10.0, places));
         return Math.round(value * c) / c;
+    }
+
+    public static String activateSpringProfilesAsString() {
+        return Joiner.on(',').join(activateSpringProfilesAsArray());
+    }
+
+    public static String[] activateSpringProfilesAsArray() {
+        final Properties properties = new Properties();
+        try {
+            properties.load(Utils.class.getClassLoader().getResourceAsStream("activate.properties"));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
+        return Splitter.on(',')
+                .omitEmptyStrings()
+                .trimResults()
+                .splitToList(properties.getProperty("springProfileActivate"))
+                .toArray(new String[0]);
     }
 }
