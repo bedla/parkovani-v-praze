@@ -24,12 +24,12 @@ public class RouteService {
     private JdbcTemplate jdbcTemplate;
 
     public List<Route> findRoutes(double lat, double lng, int count, boolean orderByDistance) {
-        LOG.info("findRoutes({}, {}, {}, {})", lat, lng, count, orderByDistance);
+        LOG.debug("findRoutes({}, {}, {}, {})", lat, lng, count, orderByDistance);
 
         final double[] doubles = Utils.transformWgs84ToMercator(lng, lat);
         final String sql = String.format("SELECT uid FROM DOP_ZPS_Automaty_b_buffer20 as t WHERE ST_Contains(t.the_geom, 'POINT(%s %s)') = TRUE ", doubles[0], doubles[1]);
 
-        LOG.info("findRoutes.list - {}", sql);
+        LOG.trace("findRoutes.list - {}", sql);
         final List<Integer> listStartAutomaty = jdbcTemplate.queryForList(sql, Integer.class);
 
         final int uid;
@@ -37,7 +37,7 @@ public class RouteService {
             final String point = String.format("%s %s", doubles[0], doubles[1]);
             final String sqlClosest = String.format("SELECT uid  FROM DOP_ZPS_Automaty_b_buffer20 as t where ST_Distance(t.the_geom, 'POINT(%s)') > 0 order by ST_Distance(t.the_geom, 'POINT(%s)') limit 1", point, point);
 
-            LOG.info("findRoutes.closest - {}", sqlClosest);
+            LOG.trace("findRoutes.closest - {}", sqlClosest);
             final Integer id = jdbcTemplate.queryForObject(sqlClosest, Integer.class);
             if (id != null) {
                 uid = id;

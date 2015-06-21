@@ -31,6 +31,7 @@ public class GeoCodingController implements CommandLineRunner {
     private static final String NAMES_TABLE = "NAMES";
 
     static {
+        // Fake data
         AUTOMAT_DESC.put("O1", "40,- Kč#Po - Pá, 8 - 18 h#15 min.#2 hod.");
         AUTOMAT_DESC.put("O2", "40,- Kč#Po - So, 8 - 18 h#30 min.#2 hod.");
         AUTOMAT_DESC.put("O3", "40,- Kč#Po - So, 8 - 20 h#40 min.#2 hod.");
