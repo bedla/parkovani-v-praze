@@ -122,7 +122,7 @@ $(document).ready(function () {
             // console.log("decoded " + len + " coordinates in " + ((end - start) / 1000) + "s");
             return array;
         },
-        createPointFeature = function (wktPoint, icon, opacity, index, type, tooltip) {
+        createPointFeature = function (wktPoint, icon, opacity, index, uid, type, tooltip) {
 
             tooltip = tooltip || [];
             var point = new ol.format.WKT().readGeometry(wktPoint);
@@ -141,12 +141,13 @@ $(document).ready(function () {
             pointFeature.setStyle(iconStyle);
 
             pointFeature.set('parkovani.index', index);
+            pointFeature.set('parkovani.uid', uid);
             pointFeature.set('parkovani.type', type);
             pointFeature.set('parkovani.tooltip', tooltip);
 
             return pointFeature;
         },
-        createPathFeature = function (pointsAjax, index, type) {
+        createPathFeature = function (pointsAjax, index, targetUid, type) {
 
             var line = new ol.geom.LineString(pointsAjax);
             line.transform('EPSG:4326', 'EPSG:3857');
@@ -154,6 +155,7 @@ $(document).ready(function () {
             var feature = new ol.Feature({geometry: line});
             feature.set('parkovani.index', index);
             feature.set('parkovani.type', type);
+            feature.set('parkovani.uid', targetUid);
             return feature;
 
         },
@@ -172,11 +174,11 @@ $(document).ready(function () {
                 currentRoutes.automatFeatures = [];
                 currentRoutes.pathFeatures = [];
                 for (var i = 0; i < currentRoutes.ajaxData.length; i++) {
-                    currentRoutes.pathFeatures.push(createPathFeature(decodePath(currentRoutes.ajaxData[i].points), i, 'path'));
-                    currentRoutes.automatFeatures.push(createPointFeature(currentRoutes.ajaxData[i].targetPoint, 'parking-meter', 1, i, 'automat', currentRoutes.ajaxData[i].tooltip));
+                    currentRoutes.pathFeatures.push(createPathFeature(decodePath(currentRoutes.ajaxData[i].points), i, currentRoutes.ajaxData[i].targetUid, 'path'));
+                    currentRoutes.automatFeatures.push(createPointFeature(currentRoutes.ajaxData[i].targetPoint, 'parking-meter', 1, i, currentRoutes.ajaxData[i].targetUid, 'automat', currentRoutes.ajaxData[i].tooltip));
                 }
 
-                currentRoutes.carFeature = createPointFeature(currentRoutes.ajaxData[0].sourcePoint, 'car', 1, -1, 'car')
+                currentRoutes.carFeature = createPointFeature(currentRoutes.ajaxData[0].sourcePoint, 'car', 1, -1, currentRoutes.ajaxData[0].sourceUid, 'car');
             }
 
             var featuresToLayer = [];
@@ -194,6 +196,8 @@ $(document).ready(function () {
             vectorSource.addFeatures(featuresToLayer);
 
             if (fromAjax) {
+                ga('send', 'event', 'car', 'select', 'uid', currentRoutes.carFeature.get("parkovani.uid"));
+
                 var $ol = $('<ol></ol>');
 
                 for (var i = 0; i < currentRoutes.ajaxData.length; i++) {
@@ -215,6 +219,10 @@ $(document).ready(function () {
                 }
 
                 $("#output").html($ol);
+            } else {
+                if (currentRoutes.selectedPath !== undefined) {
+                    ga('send', 'event', 'automat', 'select', 'uid', currentRoutes.pathFeatures[currentRoutes.selectedPath].get("parkovani.uid"));
+                }
             }
         },
         callRoute = function (x, y) {
@@ -233,14 +241,17 @@ $(document).ready(function () {
 
 
                 if (data.length == 0) {
+                    ga('send', 'event', 'not-found');
                     alert("404 Route not found");
                     currentRoutes = {};
                 } else {
+                    ga('send', 'event', 'found');
                     currentRoutes = {ajaxData: data};
                 }
 
                 updateRoutes(true);
             }).fail(function (jqXHR, textStatus) {
+                ga('send', 'event', 'error', textStatus);
                 $("#progress").hide();
                 alert(textStatus);
             });
