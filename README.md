@@ -1,9 +1,9 @@
-[Parking in Prague](http://185.8.165.203:8080/parkovani-v-praze/) - working prototype
+Parking in Prague
 =================
 * 48h of programming within PragueHacks 2015
 * Result is working prototype of web application searching nearest parking lot ordered by driving distance
 
-[Parkování v Praze](http://185.8.165.203:8080/parkovani-v-praze/) - fungující prototyp
+Parkování v Praze
 =================
 
 * 48h programování v rámci PragueHacks 2015
